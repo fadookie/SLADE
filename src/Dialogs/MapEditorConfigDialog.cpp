@@ -67,13 +67,12 @@ public:
 		msizer->Add(sizer, 1, wxEXPAND|wxALL, 10);
 
 		// Open selected game configuration if no map names are currently loaded
-		auto mapInfo = theGameConfiguration->mapInfo();
-		if (mapInfo.nMaps() == 0)
-		{
+		//if (theGameConfiguration->nMapNames() == 0)
+		//{
 			string gname = theGameConfiguration->gameConfig(game).name;
 			string pname = theGameConfiguration->portConfig(port).name;
 			theGameConfiguration->openConfig(gname, pname);
-		}
+		//}
 
 		// Check if the game configuration allows any map name
 		int flags = 0;

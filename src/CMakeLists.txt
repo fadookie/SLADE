@@ -1,3 +1,7 @@
+if (NOT NO_COTIRE)
+	include(../cmake/cotire.cmake)
+endif()
+
 # wxWidgets version minimum 3.0
 if(NOT WX_VERSION)
 	SET(WX_VERSION 3.0)
@@ -44,10 +48,6 @@ if(NOT NO_FLUIDSYNTH)
 	include(../cmake/FindFluidSynth.cmake)
 else(NO_FLUIDSYNTH)
 	message(STATUS "Fluidsynth support is disabled.")
-endif()
-
-if (NOT NO_COTIRE)
-	include(../cmake/cotire.cmake)
 endif()
 
 find_package(CURL)
@@ -114,6 +114,14 @@ endif(APPLE)
 # enable SSE instructions for dumb library
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_USE_SSE -msse")
 
+# c++14 is required to compile
+if(CMAKE_VERSION VERSION_LESS 3.1)
+    add_compile_options(-std=c++14)
+else()
+    set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+endif()
+
 add_executable(slade WIN32 MACOSX_BUNDLE
 	External/lzma/C/LzmaDec.c
 	External/mus2mid/mus2mid.cpp
@@ -130,11 +138,6 @@ add_executable(slade WIN32 MACOSX_BUNDLE
 	${SLADE_SOURCES}
 	${SLADE_HEADERS}
 )
-
-if (NOT NO_COTIRE)
-	set_target_properties(slade PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "common.h")
-	cotire(slade)
-endif()
 
 target_link_libraries(slade
 	${ZLIB_LIBRARY}
@@ -178,3 +181,7 @@ else(APPLE)
 	endif(UNIX)
 endif(APPLE)
 
+if (NOT NO_COTIRE)
+	set_target_properties(slade PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "common.h")
+	cotire(slade)
+endif()

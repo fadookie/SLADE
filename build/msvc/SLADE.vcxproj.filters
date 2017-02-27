@@ -1383,6 +1383,9 @@
     <ClCompile Include="..\..\src\Game\MapInfo.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+	<ClCompile Include="..\..\src\Dialogs\GfxCropDialog.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -2401,6 +2404,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game\MapInfo.h">
       <Filter>Game</Filter>
+    </ClInclude>
+	<ClInclude Include="..\..\src\Dialogs\GfxCropDialog.h">
+      <Filter>Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

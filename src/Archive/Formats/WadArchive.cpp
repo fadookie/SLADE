@@ -630,7 +630,10 @@ bool WadArchive::write(string filename, bool update)
 	for (uint32_t l = 0; l < num_lumps; l++)
 	{
 		entry = getEntry(l);
-		file.Write(entry->getData(), entry->getSize());
+		if (entry->getSize())
+		{
+			file.Write(entry->getData(), entry->getSize());
+		}
 	}
 
 	// Write the directory
@@ -769,7 +772,7 @@ ArchiveEntry* WadArchive::addEntry(ArchiveEntry* entry, string add_namespace, bo
 /* WadArchive::removeEntry
  * Override of Archive::removeEntry to update namespaces if needed
  *******************************************************************/
-bool WadArchive::removeEntry(ArchiveEntry* entry, bool delete_entry)
+bool WadArchive::removeEntry(ArchiveEntry* entry)
 {
 	// Check entry
 	if (!checkEntry(entry))
@@ -779,7 +782,7 @@ bool WadArchive::removeEntry(ArchiveEntry* entry, bool delete_entry)
 	string name = entry->getName();
 
 	// Do default remove
-	bool ok = Archive::removeEntry(entry, delete_entry);
+	bool ok = Archive::removeEntry(entry);
 
 	if (ok)
 	{
@@ -1449,7 +1452,7 @@ vector<ArchiveEntry*> WadArchive::findAll(search_options_t& options)
 	// Init search variables
 	ArchiveEntry* start = getEntry(0);
 	ArchiveEntry* end = NULL;
-	options.match_name = options.match_name.Lower();
+	options.match_name = options.match_name.Upper();
 	vector<ArchiveEntry*> ret;
 
 	// "graphics" namespace is the global namespace in a wad
@@ -1461,7 +1464,8 @@ vector<ArchiveEntry*> WadArchive::findAll(search_options_t& options)
 	{
 		// Find matching namespace
 		bool ns_found = false;
-		for (unsigned a = 0; a < namespaces.size(); a++)
+		size_t namespaces_size = namespaces.size();
+		for (unsigned a = 0; a < namespaces_size; a++)
 		{
 			if (namespaces[a].name == options.match_namespace)
 			{
@@ -1501,10 +1505,7 @@ vector<ArchiveEntry*> WadArchive::findAll(search_options_t& options)
 		// Check name
 		if (!options.match_name.IsEmpty())
 		{
-			// Force case insensitivity
-			options.match_name.MakeLower();
-
-			if (!options.match_name.Matches(entry->getName().Lower()))
+			if (!options.match_name.Matches(entry->getUpperName()))
 			{
 				entry = entry->nextEntry();
 				continue;
