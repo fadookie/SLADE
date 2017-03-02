@@ -93,10 +93,11 @@ public:
 			cbo_mapname->SetMaxLength(8);
 
 		// Add possible map names to the combo box
-		for (unsigned a = 0; a < mapInfo.nMaps(); a++)
+		auto map_info = theGameConfiguration->mapInfo();
+		for (unsigned a = 0; a < map_info.nMaps(); a++)
 		{
 			// Check if map already exists
-			string mapname = mapInfo.getMap(a).entry_name;
+			string mapname = map_info.getMap(a).entry_name;
 			bool exists = false;
 			for (unsigned m = 0; m < maps.size(); m++)
 			{
@@ -112,7 +113,7 @@ public:
 		}
 
 		// Set inital map name selection
-		if (mapInfo.nMaps() > 0)
+		if (map_info.nMaps() > 0)
 			cbo_mapname->SetSelection(0);
 
 		// Create map format combo box

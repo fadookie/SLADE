@@ -32,6 +32,9 @@
 #include <wx/regex.h>
 
 
+/*******************************************************************
+ * VARIABLES
+ *******************************************************************/
 namespace StringUtils
 {
 	wxRegEx re_int1{ "^[+-]?[0-9]+[0-9]*$", wxRE_DEFAULT | wxRE_NOSUB };
@@ -40,6 +43,10 @@ namespace StringUtils
 	wxRegEx re_float{ "^[-+]?[0-9]*.?[0-9]+([eE][-+]?[0-9]+)?$", wxRE_DEFAULT | wxRE_NOSUB };
 }
 
+
+/*******************************************************************
+ * STRINGUTILS NAMESPACE FUNCTIONS
+ *******************************************************************/
 
 /* StringUtils::escapedString
  * Returns a copy of [str] with escaped double quotes and
@@ -56,11 +63,26 @@ string StringUtils::escapedString(const string& str, bool swap_backslash)
 	return escaped;
 }
 
-bool StringUtils::isInteger(const string& str)
+/* StringUtils::isInteger
+ * Returns true if [str] is a valid integer. If [allow_hex] is true,
+ * can also be a valid hex string
+ *******************************************************************/
+bool StringUtils::isInteger(const string& str, bool allow_hex)
 {
-	return (re_int1.Matches(str) || re_int2.Matches(str) || re_int3.Matches(str));
+	return (re_int1.Matches(str) || re_int2.Matches(str) || (allow_hex && re_int3.Matches(str)));
 }
 
+/* StringUtils::isHex
+ * Returns true if [str] is a valid hex string
+ *******************************************************************/
+bool StringUtils::isHex(const string& str)
+{
+	return re_int3.Matches(str);
+}
+
+/* StringUtils::isFloat
+ * Returns true if [str] is a valid floating-point number
+ *******************************************************************/
 bool StringUtils::isFloat(const string& str)
 {
 	return (re_float.Matches(str));

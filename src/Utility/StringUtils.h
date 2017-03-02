@@ -16,6 +16,7 @@ namespace StringUtils
 	static string	ESCAPED_SLASH_BACK = "\\\\";
 
 	string	escapedString(const string& str, bool swap_backslash = false);
-	bool	isInteger(const string& str);
+	bool	isInteger(const string& str, bool allow_hex = true);
+	bool	isHex(const string& str);
 	bool	isFloat(const string& str);
 }

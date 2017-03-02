@@ -161,7 +161,7 @@ bool Class::parse(Tokenizer& tz)
 	{
 		token.MakeLower();
 
-		// ; (skip)
+		// ';' (skip)
 		if (token == ";")
 		{
 			tz.getToken(&token);
@@ -227,14 +227,27 @@ bool Class::parse(Tokenizer& tz)
 
 		// Unknown block (skip it)
 		else if (token == "{")
+		{
+			LOG_MESSAGE(2, "Skip section at line %d", tz.lineNo());
 			tz.skipSection("{", "}");
+		}
 
 		// Something else (variable or function)
 		else
 		{
-			// Get all tokens until ';'
-			vector<string> tokens;
-			tz.getTokensUntil(tokens, ";");
+			// Skip until ; or {} block
+			while (!tz.atEnd())
+			{
+				tz.getToken(&token);
+				if (token == ";")
+					break;
+				else if (token == "{")
+				{
+					// Skip block
+					tz.skipSection("{", "}");
+					break;
+				}
+			}
 		}
 
 		// Next token
@@ -257,6 +270,8 @@ bool Definitions::parseZScript(ArchiveEntry* entry)
 	LOG_MESSAGE(2, "Parsing ZScript entry \"%s\"", entry->getPath(true));
 
 	string token;
+	int unknown_line = -1;
+	vector<string> unknown_tokens;
 	while (!tz.atEnd())
 	{
 		tz.getToken(&token);
@@ -315,15 +330,42 @@ bool Definitions::parseZScript(ArchiveEntry* entry)
 			enumerators.push_back(e);
 		}
 
+		else if (token == "const")
+		{
+			tz.getToken(&token);
+			variables.push_back({ token });
+
+			LOG_MESSAGE(2, "%d: Add const variable \"%s\"", tz.lineNo(), token);
+
+			while (token != ";")
+				tz.getToken(&token);			
+		}
+
 		else if (!tz.atEnd())
 		{
-			LOG_MESSAGE(
+			if (unknown_line < 0)
+				unknown_line = tz.lineNo();
+
+			unknown_tokens.push_back(token);
+
+			continue;
+			/*LOG_MESSAGE(
 				1,
-				"Error parsing ZScript: Unexpected token \"%s\" at line %d",
+				"ZScript: Unexpected token \"%s\" at line %d",
 				token,
 				tz.lineNo()
-			);
-			return false;
+			);*/
+			//return false;
+		}
+
+		if (!unknown_tokens.empty())
+		{
+			/*string message = S_FMT("ZScript: Unexpected tokens starting line %d: ", unknown_line);
+			for (auto s : unknown_tokens)
+				message += S_FMT("%s ", s);
+			LOG_MESSAGE(1, message);*/
+			unknown_tokens.clear();
+			unknown_line = -1;
 		}
 	}
 
@@ -336,9 +378,14 @@ bool Definitions::parseZScript(ArchiveEntry* entry)
 #include "MainEditor/MainWindow.h"
 #include "General/Console/Console.h"
 
-CONSOLE_COMMAND(test_parse_zscript, 1, false)
+CONSOLE_COMMAND(test_parse_zscript, 0, false)
 {
-	auto entry = theMainWindow->getCurrentArchive()->entryAtPath(args[0]);
+	ArchiveEntry* entry = nullptr;
+	if (!args.empty())
+		entry = theMainWindow->getCurrentArchive()->entryAtPath(args[0]);
+	else
+		entry = theMainWindow->getCurrentEntry();
+
 	if (entry)
 	{
 		Definitions test;
@@ -347,4 +394,6 @@ CONSOLE_COMMAND(test_parse_zscript, 1, false)
 		else
 			theConsole->logMessage("Parsing failed");
 	}
+	else
+		theConsole->logMessage("Select an entry or enter a valid entry name/path");
 }
