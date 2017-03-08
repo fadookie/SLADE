@@ -49,6 +49,7 @@
 #include "MapEditor/NodeBuilders.h"
 #include "OpenGL/Drawing.h"
 #include "OpenGL/OpenGL.h"
+#include "General/Scripting.h"
 #include "UI/SplashWindow.h"
 #include "UI/TextEditor/TextLanguage.h"
 #include "UI/TextEditor/TextStyle.h"
@@ -1008,8 +1009,9 @@ bool MainApp::OnInit()
 		return false;
 	}
 
-	// Init lua
-	Lua::init();
+	// Init scripting
+	//Lua::init();
+	Scripting::init();
 
 	// Calculate scaling factor (from system ppi)
 	wxMemoryDC dc;

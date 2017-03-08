@@ -160,6 +160,12 @@
     <Filter Include="External\wxEmail">
       <UniqueIdentifier>{4d45f584-81e4-44d0-979d-f541131c9cc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\Duktape">
+      <UniqueIdentifier>{7dfdd055-563e-4dec-afba-31ad7f424689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\Duktape\dukglue">
+      <UniqueIdentifier>{c2ddd19e-1937-4259-8f24-f0343864d1bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\External\mus2mid\mus2mid.cpp">
@@ -1380,6 +1386,12 @@
     <ClCompile Include="..\..\src\Dialogs\GfxCropDialog.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\External\duktape\duktape.c">
+      <Filter>External\Duktape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\General\Scripting.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -2395,6 +2407,66 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Dialogs\GfxCropDialog.h">
       <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\duk_config.h">
+      <Filter>External\Duktape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\duktape.h">
+      <Filter>External\Duktape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_class_proto.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_constructor.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_function.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_method.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_primitive_types.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_refs.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_stack.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_traits.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_typeinfo.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_types.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\dukexception.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\dukglue.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\dukvalue.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\public_util.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\register_class.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\register_function.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\External\duktape\dukglue\register_property.h">
+      <Filter>External\Duktape\dukglue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\General\Scripting.h">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

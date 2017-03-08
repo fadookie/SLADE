@@ -301,6 +301,9 @@
     <ClCompile Include="..\..\src\Dialogs\SetupWizard\SetupWizardDialog.cpp" />
     <ClCompile Include="..\..\src\Dialogs\SetupWizard\TempFolderWizardPage.cpp" />
     <ClCompile Include="..\..\src\Dialogs\TranslationEditorDialog.cpp" />
+    <ClCompile Include="..\..\src\External\duktape\duktape.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\src\External\dumb\core\atexit.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release - FTGL|Win32'">NotUsing</PrecompiledHeader>
@@ -846,6 +849,7 @@
     <ClCompile Include="..\..\src\General\Misc.cpp" />
     <ClCompile Include="..\..\src\General\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\General\SAction.cpp" />
+    <ClCompile Include="..\..\src\General\Scripting.cpp" />
     <ClCompile Include="..\..\src\General\UndoRedo.cpp" />
     <ClCompile Include="..\..\src\General\VersionCheck.cpp" />
     <ClCompile Include="..\..\src\External\glew\glew.c">
@@ -1631,6 +1635,25 @@
     <ClInclude Include="..\..\src\Dialogs\SetupWizard\TempFolderWizardPage.h" />
     <ClInclude Include="..\..\src\Dialogs\SetupWizard\WizardPageBase.h" />
     <ClInclude Include="..\..\src\Dialogs\TranslationEditorDialog.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_class_proto.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_constructor.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_function.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_method.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_primitive_types.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_refs.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_stack.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_traits.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_typeinfo.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\detail_types.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\dukexception.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\dukglue.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\dukvalue.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\public_util.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\register_class.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\register_function.h" />
+    <ClInclude Include="..\..\src\External\duktape\dukglue\register_property.h" />
+    <ClInclude Include="..\..\src\External\duktape\duktape.h" />
+    <ClInclude Include="..\..\src\External\duktape\duk_config.h" />
     <ClInclude Include="..\..\src\External\dumb\dumb.h" />
     <ClInclude Include="..\..\src\External\dumb\internal\aldumb.h" />
     <ClInclude Include="..\..\src\External\dumb\internal\barray.h" />
@@ -1658,6 +1681,7 @@
     <ClInclude Include="..\..\src\General\Misc.h" />
     <ClInclude Include="..\..\src\General\ResourceManager.h" />
     <ClInclude Include="..\..\src\General\SAction.h" />
+    <ClInclude Include="..\..\src\General\Scripting.h" />
     <ClInclude Include="..\..\src\General\UndoRedo.h" />
     <ClInclude Include="..\..\src\General\VersionCheck.h" />
     <ClInclude Include="..\..\src\External\glew\glew.h" />

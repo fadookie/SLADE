@@ -240,6 +240,9 @@ public:
 	virtual ArchiveEntry*			findLast(search_options_t& options);
 	virtual vector<ArchiveEntry*>	findAll(search_options_t& options);
 	virtual vector<ArchiveEntry*>	findModifiedEntries(ArchiveTreeNode* dir = NULL);
+
+	// For scripting
+	vector<ArchiveEntry*>	allEntries() { vector<ArchiveEntry*> list; getEntryTreeAsList(list); return list; }
 };
 
 // Base class for list-based archive formats
