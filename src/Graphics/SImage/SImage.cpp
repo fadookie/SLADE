@@ -1340,33 +1340,33 @@ bool SImage::applyTranslation(Translation* tr, Palette8bit* pal, bool truecolor)
 		{
 			TransRange* r = tr->getRange(a);
 
+			// Check pixel is within translation range
+			if (i < r->oStart() || i > r->oEnd())
+				continue;
+
 			// Palette range translation
 			if (r->getType() == TRANS_PALETTE)
 			{
 				TransRangePalette* tp = (TransRangePalette*)r;
 
-				// Check pixel is within translation range
-				if (i >= tp->oStart() && i <= tp->oEnd())
+				// Figure out how far along the range this colour is
+				double range_frac = 0;
+				if (tp->oStart() != tp->oEnd())
+					range_frac = double(i - tp->oStart()) / double(tp->oEnd() - tp->oStart());
+
+				// Determine destination palette index
+				uint8_t di = tp->dStart() + range_frac * (tp->dEnd() - tp->dStart());
+
+				// Apply new colour
+				data[p] = di;
+				if (truecolor)
 				{
-					// Figure out how far along the range this colour is
-					double range_frac = 0;
-					if (tp->oStart() != tp->oEnd())
-						range_frac = double(i - tp->oStart()) / double(tp->oEnd() - tp->oStart());
-
-					// Determine destination palette index
-					uint8_t di = tp->dStart() + range_frac * (tp->dEnd() - tp->dStart());
-
-					// Apply new colour
-					data[p] = di;
-					if (truecolor)
-					{
-						int q = p*4;
-						rgba_t col = pal->colour(di);
-						newdata[q+0] = col.r;
-						newdata[q+1] = col.g;
-						newdata[q+2] = col.b;
-						newdata[q+3] = mask ? mask[p] : col.a;
-					}
+					int q = p * 4;
+					rgba_t col = pal->colour(di);
+					newdata[q + 0] = col.r;
+					newdata[q + 1] = col.g;
+					newdata[q + 2] = col.b;
+					newdata[q + 3] = mask ? mask[p] : col.a;
 				}
 			}
 
@@ -1375,32 +1375,28 @@ bool SImage::applyTranslation(Translation* tr, Palette8bit* pal, bool truecolor)
 			{
 				TransRangeColour* tc = (TransRangeColour*)r;
 
-				// Check pixel is within translation range
-				if (i >= tc->oStart() && i <= tc->oEnd())
+				// Figure out how far along the range this colour is
+				double range_frac = 0;
+				if (tc->oStart() != tc->oEnd())
+					range_frac = double(i - tc->oStart()) / double(tc->oEnd() - tc->oStart());
+
+				// Determine destination colour
+				uint8_t r = tc->dStart().r + range_frac * (tc->dEnd().r - tc->dStart().r);
+				uint8_t g = tc->dStart().g + range_frac * (tc->dEnd().g - tc->dStart().g);
+				uint8_t b = tc->dStart().b + range_frac * (tc->dEnd().b - tc->dStart().b);
+
+				// Find nearest colour in palette
+				uint8_t di = pal->nearestColour(rgba_t(r, g, b));
+
+				// Apply new colour
+				data[p] = di;
+				if (truecolor)
 				{
-					// Figure out how far along the range this colour is
-					double range_frac = 0;
-					if (tc->oStart() != tc->oEnd())
-						range_frac = double(i - tc->oStart()) / double(tc->oEnd() - tc->oStart());
-
-					// Determine destination colour
-					uint8_t r = tc->dStart().r + range_frac * (tc->dEnd().r - tc->dStart().r);
-					uint8_t g = tc->dStart().g + range_frac * (tc->dEnd().g - tc->dStart().g);
-					uint8_t b = tc->dStart().b + range_frac * (tc->dEnd().b - tc->dStart().b);
-
-					// Find nearest colour in palette
-					uint8_t di = pal->nearestColour(rgba_t(r, g, b));
-
-					// Apply new colour
-					data[p] = di;
-					if (truecolor)
-					{
-						int q = p*4;
-						newdata[q+0] = r;
-						newdata[q+1] = g;
-						newdata[q+2] = b;
-						newdata[q+3] = mask ? mask[p] : 255;
-					}
+					int q = p * 4;
+					newdata[q + 0] = r;
+					newdata[q + 1] = g;
+					newdata[q + 2] = b;
+					newdata[q + 3] = mask ? mask[p] : 255;
 				}
 			}
 
@@ -1409,31 +1405,89 @@ bool SImage::applyTranslation(Translation* tr, Palette8bit* pal, bool truecolor)
 			{
 				TransRangeDesat* td = (TransRangeDesat*)r;
 
-				// Check pixel is within translation range
-				if (i >= td->oStart() && i <= td->oEnd())
+				// Get greyscale colour
+				rgba_t col = pal->colour(i);
+				float grey = (col.r*0.3f + col.g*0.59f + col.b*0.11f) / 255.0f;
+
+				// Determine destination colour
+				uint8_t r = MIN(255, int((td->dSr() + grey*(td->dEr() - td->dSr()))*255.0f));
+				uint8_t g = MIN(255, int((td->dSg() + grey*(td->dEg() - td->dSg()))*255.0f));
+				uint8_t b = MIN(255, int((td->dSb() + grey*(td->dEb() - td->dSb()))*255.0f));
+
+				// Find nearest colour in palette
+				uint8_t di = pal->nearestColour(rgba_t(r, g, b));
+
+				// Apply new colour
+				data[p] = di;
+				if (truecolor)
 				{
-					// Get greyscale colour
-					rgba_t col = pal->colour(i);
-					float grey = (col.r*0.3f + col.g*0.59f + col.b*0.11f) / 255.0f;
+					int q = p * 4;
+					newdata[q + 0] = r;
+					newdata[q + 1] = g;
+					newdata[q + 2] = b;
+					newdata[q + 3] = mask ? mask[p] : 255;
+				}
+			}
 
-					// Determine destination colour
-					uint8_t r = MIN(255, int((td->dSr() + grey*(td->dEr() - td->dSr()))*255.0f));
-					uint8_t g = MIN(255, int((td->dSg() + grey*(td->dEg() - td->dSg()))*255.0f));
-					uint8_t b = MIN(255, int((td->dSb() + grey*(td->dEb() - td->dSb()))*255.0f));
+			// Colourised range
+			else if (r->getType() == TRANS_COLOURISE)
+			{
+				TransRangeColourise* tc = (TransRangeColourise*)r;
 
-					// Find nearest colour in palette
-					uint8_t di = pal->nearestColour(rgba_t(r, g, b));
+				// Get colours
+				rgba_t col = pal->colour(i);
+				rgba_t colour = tc->getColour();
 
-					// Apply new colour
-					data[p] = di;
-					if (truecolor)
-					{
-						int q = p*4;
-						newdata[q+0] = r;
-						newdata[q+1] = g;
-						newdata[q+2] = b;
-						newdata[q+3] = mask ? mask[p] : 255;
-					}
+				// Colourise
+				float grey = (col.r*col_greyscale_r + col.g*col_greyscale_g + col.b*col_greyscale_b) / 255.0f;
+				if (grey > 1.0) grey = 1.0;
+				col.r = colour.r*grey;
+				col.g = colour.g*grey;
+				col.b = colour.b*grey;
+
+				// Find nearest colour in palette
+				uint8_t di = pal->nearestColour(col);
+
+				// Apply new colour
+				data[p] = di;
+				if (truecolor)
+				{
+					int q = p * 4;
+					newdata[q + 0] = col.r;
+					newdata[q + 1] = col.g;
+					newdata[q + 2] = col.b;
+					newdata[q + 3] = mask ? mask[p] : 255;
+				}
+			}
+
+			// Colourised range
+			else if (r->getType() == TRANS_TINT)
+			{
+				TransRangeTint* tt = (TransRangeTint*)r;
+
+				// Get colours
+				rgba_t col = pal->colour(i);
+				rgba_t colour = tt->getColour();
+
+				// Colourise
+				float amount = tt->getAmount() * 0.01f;
+				float inv_amt = 1.0f - amount;
+				col.r = col.r*inv_amt + colour.r*amount;
+				col.g = col.g*inv_amt + colour.g*amount;
+				col.b = col.b*inv_amt + colour.b*amount;
+
+				// Find nearest colour in palette
+				uint8_t di = pal->nearestColour(col);
+
+				// Apply new colour
+				data[p] = di;
+				if (truecolor)
+				{
+					int q = p * 4;
+					newdata[q + 0] = col.r;
+					newdata[q + 1] = col.g;
+					newdata[q + 2] = col.b;
+					newdata[q + 3] = mask ? mask[p] : 255;
 				}
 			}
 		}
@@ -1504,15 +1558,12 @@ bool SImage::applyTranslation(string tr, Palette8bit* pal)
 	if (tr.StartsWith("\"$@", &table))
 	{
 		table.RemoveLast(1); // remove the closing '\"'
-		Archive *bra = theArchiveManager->baseResourceArchive();
-		if (bra)
+		ArchiveEntry *trantbl = theArchiveManager->getResourceEntry(table);
+		
+		if (trantbl && trantbl->getSize() == 256)
 		{
-			ArchiveEntry *trantbl = bra->getEntry(table);
-			if (trantbl && trantbl->getSize() == 256)
-			{
-				trans.read(trantbl->getData());
-				return applyTranslation(&trans, pal);
-			}
+			trans.read(trantbl->getData());
+			return applyTranslation(&trans, pal);
 		}
 	}
 	Tokenizer tz;
@@ -1710,7 +1761,7 @@ bool SImage::drawImage(SImage& img, int x_pos, int y_pos, si_drawprops_t& proper
  * Colourises the image to [colour]. If the image is paletted, each
  * pixel will be set to its nearest matching colour in [pal]
  *******************************************************************/
-bool SImage::colourise(rgba_t colour, Palette8bit* pal)
+bool SImage::colourise(rgba_t colour, Palette8bit* pal, int start, int stop)
 {
 	// Can't do this with alpha maps
 	if (type == ALPHAMAP)
@@ -1725,6 +1776,13 @@ bool SImage::colourise(rgba_t colour, Palette8bit* pal)
 	rgba_t col;
 	for (int a = 0; a < width*height*bpp; a+= bpp)
 	{
+		// Skip colors out of range if desired
+		if (type == PALMASK && start >= 0 && stop >= start && stop < 256) 
+		{
+			if (data[a] < start || data[a] > stop)
+				continue;
+		}
+
 		// Get current pixel colour
 		if (type == RGBA)
 			col.set(data[a], data[a+1], data[a+2], data[a+3]);
@@ -1752,7 +1810,7 @@ bool SImage::colourise(rgba_t colour, Palette8bit* pal)
  * Tints the image to [colour] by [amount]. If the image is paletted,
  * each pixel will be set to its nearest matching colour in [pal]
  *******************************************************************/
-bool SImage::tint(rgba_t colour, float amount, Palette8bit* pal)
+bool SImage::tint(rgba_t colour, float amount, Palette8bit* pal, int start, int stop)
 {
 	// Can't do this with alpha maps
 	if (type == ALPHAMAP)
@@ -1767,6 +1825,13 @@ bool SImage::tint(rgba_t colour, float amount, Palette8bit* pal)
 	rgba_t col;
 	for (int a = 0; a < width*height*bpp; a+= bpp)
 	{
+		// Skip colors out of range if desired
+		if (type == PALMASK && start >= 0 && stop >= start && stop < 256)
+		{
+			if (data[a] < start || data[a] > stop)
+				continue;
+		}
+
 		// Get current pixel colour
 		if (type == RGBA)
 			col.set(data[a], data[a+1], data[a+2], data[a+3]);
@@ -1787,4 +1852,139 @@ bool SImage::tint(rgba_t colour, float amount, Palette8bit* pal)
 	}
 
 	return true;
+}
+
+/* SImage::adjust
+ * Automatically crop the image to remove fully transparent rows and
+ * columns from the sides. Returns true if successfully cropped.
+ *******************************************************************/
+bool SImage::adjust()
+{
+	int x1 = 0, x2 = width, y1 = 0, y2 = height;
+
+	// Loop for empty columns on the left
+	bool opaquefound = false;
+	while (x1 < x2)
+	{
+		for (int i = 0; i < y2; ++i)
+		{
+			size_t p = i*width + x1; // Pixel position
+			switch (type)
+			{
+			case PALMASK:	// Transparency is mask[p] == 0
+				if (mask[p])
+					opaquefound = true;
+				break;
+			case RGBA:		// Transparency is data[p*4 + 3] == 0
+				if (data[p * 4 + 3])
+					opaquefound = true;
+				break;
+			case ALPHAMAP:	// Transparency is data[p] == 0
+				if (data[p])
+					opaquefound = true;
+				break;
+			}
+			if (opaquefound) break;
+		}
+		if (opaquefound) break;
+		++x1;
+	}
+
+	if (x1 == x2) // Empty image, all columns are empty, crop it to a single pixel
+		return crop(0, 0, 1, 1);
+
+	// Now loop for empty columns on the right
+	opaquefound = false;
+	while (x2 > x1)
+	{
+		for (int i = 0; i < y2; ++i)
+		{
+			size_t p = i*width + x2 - 1;
+			switch (type)
+			{
+			case PALMASK:	if (mask[p]) opaquefound = true; break;
+			case RGBA:		if (data[p * 4 + 3]) opaquefound = true; break;
+			case ALPHAMAP:	if (data[p]) opaquefound = true; break;
+			}
+			if (opaquefound) break;
+		}
+		if (opaquefound) break;
+		--x2;
+	}
+
+	// Now loop for empty rows from the top
+	opaquefound = false;
+	while (y1 < y2)
+	{
+		for (int i = x1; i < x2; ++i)
+		{
+			size_t p = y1*width + i;
+			switch (type)
+			{
+			case PALMASK:	if (mask[p]) opaquefound = true; break;
+			case RGBA:		if (data[p * 4 + 3]) opaquefound = true; break;
+			case ALPHAMAP:	if (data[p]) opaquefound = true; break;
+			}
+			if (opaquefound) break;
+		}
+		if (opaquefound) break;
+		++y1;
+	}
+
+	// Finally loop for empty rows from the bottom
+
+	opaquefound = false;
+	while (y2 > y1)
+	{
+		for (int i = x1; i < x2; ++i)
+		{
+			size_t p = (y2 - 1)*width + i;
+			switch (type)
+			{
+			case PALMASK:	if (mask[p]) opaquefound = true; break;
+			case RGBA:		if (data[p * 4 + 3]) opaquefound = true; break;
+			case ALPHAMAP:	if (data[p]) opaquefound = true; break;
+			}
+			if (opaquefound) break;
+		}
+		if (opaquefound) break;
+		--y2;
+	}
+
+	// Now we've found the coordinates, so we can crop
+	if (x1 == 0 && y1 == 0 && x2 == width && y2 == height)
+		return false; // No adjustment needed
+	return crop(x1, y1, x2, y2);
+}
+
+bool SImage::mirrorpad()
+{
+	// Only pad images that actually have offsets
+	if (offset_x == 0 && offset_y == 0)
+		return false;
+
+	// Only pad images that need it, so for instance if width is 10, and ofsx is 5,
+	// then the image is already mirrored. If width is 11, accept ofsx 5 or 6 as good.
+	if (offset_x == width / 2 || (width % 2 == 1 && offset_x == width / 2 + 1))
+		return false;
+
+	// Now we need to pad. Padding to the right can be done just by resizing the image,
+	// padding to the left requires flipping it, resizing it, and flipping it back.
+
+	bool needflip = offset_x < width / 2;
+	int extra = abs((offset_x * 2) - width);
+
+	bool success = true;
+	if (needflip)
+		success = mirror(false);
+	if (success)
+		success = resize(width + extra, height);
+	else
+		return false;
+	if (needflip && success)
+	{
+		success = mirror(false);
+		offset_x += extra;
+	}
+	return success;
 }
