@@ -37,6 +37,7 @@
 #include "General/Console/Console.h"
 #include "Archive/Archive.h"
 #include "Archive/ArchiveManager.h"
+#include "Archive/Formats/ZipArchive.h"
 #include "MapEditor/SLADEMap/SLADEMap.h"
 #include "GenLineSpecial.h"
 
@@ -48,6 +49,7 @@ GameConfiguration* GameConfiguration::instance = nullptr;
 CVAR(String, game_configuration, "", CVAR_SAVE)
 CVAR(String, port_configuration, "", CVAR_SAVE)
 CVAR(Bool, debug_configuration, false, CVAR_SAVE)
+CVAR(String, zdoom_pk3_path, "", CVAR_SAVE)
 
 
 /*******************************************************************
@@ -420,6 +422,19 @@ void GameConfiguration::init()
 	// Load last configuration if any
 	if (game_configuration != "")
 		openConfig(game_configuration, port_configuration);
+
+	// Load zdoom.pk3 stuff
+	ZipArchive zdoom_pk3;
+	if (wxFileExists(zdoom_pk3_path) && zdoom_pk3.open(zdoom_pk3_path))
+	{
+		// ZScript
+		auto zscript_entry = zdoom_pk3.entryAtPath("zscript.txt");
+		zscript.parseZScript(zscript_entry);
+
+		// MapInfo
+		//auto mapinfo_entry = zdoom_pk3.entryAtPath("zmapinfo.txt");
+		//mapInfo().parseZMapInfo(mapinfo_entry);
+	}
 }
 
 /* GameConfiguration::gameConfig

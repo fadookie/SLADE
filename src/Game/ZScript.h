@@ -35,6 +35,10 @@ namespace ZScript
 		Identifier(string name = "") : name{name}, native{false}, deprecated{false} {}
 		virtual ~Identifier() {}
 
+		string	getName() { return name; }
+		bool	isNative() { return native; }
+		bool	isDeprecated() { return deprecated; }
+
 	protected:
 		string	name;
 		bool	native;

@@ -221,8 +221,17 @@ bool Class::parse(Tokenizer& tz)
 		else if (token == "states")
 		{
 			// TODO
-			tz.skipToken();
-			tz.skipSection("{", "}");
+			tz.getToken(&token);
+
+			// Skip () list if it's there
+			if (token == "(")
+			{
+				tz.skipSection("(", ")");
+				tz.getToken(&token);
+			}
+			
+			if (token == "{")
+				tz.skipSection("{", "}");
 		}
 
 		// Unknown block (skip it)
@@ -235,19 +244,59 @@ bool Class::parse(Tokenizer& tz)
 		// Something else (variable or function)
 		else
 		{
-			// Skip until ; or {} block
-			while (!tz.atEnd())
+			vector<string> tokens;
+			tokens.push_back(token);
+			while (!tz.atEnd() && token != ";")
 			{
 				tz.getToken(&token);
-				if (token == ";")
-					break;
-				else if (token == "{")
+
+				// Function
+				if (token == "(")
 				{
-					// Skip block
-					tz.skipSection("{", "}");
+					Function func(tokens.back());
+					// TODO: Parse args here
+					tz.skipSection("(", ")");
+					tz.getToken(&token);
+					if (token == "{")
+						tz.skipSection("{", "}");
+					else if (token != ";")
+					{
+						logUnexpectedToken(tz, "Function", "; or {", token);
+						return false;
+					}
+
+					LOG_MESSAGE(2, "Add function %s", func.getName());
+					functions.push_back(func);
+
 					break;
 				}
+
+				// Variable
+				else if (token == "=" || token == ";")
+				{
+					LOG_MESSAGE(2, "Add variable %s", tokens.back());
+					variables.push_back({ tokens.back() });
+					while (!tz.atEnd() && token != ";")
+						tz.getToken(&token);
+					break;
+				}
+
+				tokens.push_back(token);
 			}
+
+			//// Skip until ; or {} block
+			//while (!tz.atEnd())
+			//{
+			//	tz.getToken(&token);
+			//	if (token == ";")
+			//		break;
+			//	else if (token == "{")
+			//	{
+			//		// Skip block
+			//		tz.skipSection("{", "}");
+			//		break;
+			//	}
+			//}
 		}
 
 		// Next token
@@ -265,6 +314,7 @@ bool Class::parse(Tokenizer& tz)
 bool Definitions::parseZScript(ArchiveEntry* entry)
 {
 	Tokenizer tz;
+	tz.setSpecialCharacters(Tokenizer::DEFAULT_SPECIAL_CHARS + "()");
 	tz.openMem(&entry->getMCData(), "ZScript");
 
 	LOG_MESSAGE(2, "Parsing ZScript entry \"%s\"", entry->getPath(true));

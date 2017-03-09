@@ -7,6 +7,7 @@
 #include "UDMFProperty.h"
 #include "Utility/PropertyList/PropertyList.h"
 #include "MapInfo.h"
+#include "ZScript.h"
 
 // Tag types
 enum TagTypes
@@ -206,6 +207,9 @@ private:
 	PropertyList	defaults_sector_udmf;
 	PropertyList	defaults_thing;
 	PropertyList	defaults_thing_udmf;
+
+	// ZScript
+	ZScript::Definitions	zscript;
 
 	// Singleton instance
 	static GameConfiguration*	instance;
