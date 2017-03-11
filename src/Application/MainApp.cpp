@@ -1167,7 +1167,8 @@ int MainApp::OnExit()
 	}
 
 	// Close lua
-	Lua::close();
+	Scripting::close();
+	//Lua::close();
 
 	// Close DUMB
 	dumb_exit();

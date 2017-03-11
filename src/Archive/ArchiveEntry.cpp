@@ -34,6 +34,7 @@
 #include "ArchiveEntry.h"
 #include "Archive.h"
 #include "General/Misc.h"
+#include "General/Scripting.h"
 #include "Utility/StringUtils.h"
 
 
@@ -104,6 +105,7 @@ ArchiveEntry::ArchiveEntry(ArchiveEntry& copy)
  *******************************************************************/
 ArchiveEntry::~ArchiveEntry()
 {
+	Scripting::invalidate(this);
 }
 
 /* ArchiveEntry::getName

@@ -133,6 +133,7 @@ add_executable(slade WIN32 MACOSX_BUNDLE
 	External/zreaders/music_mus_midiout.cpp
 	External/zreaders/music_smf_midiout.cpp
 	External/zreaders/music_xmi_midiout.cpp
+	External/duktape/duktape.c
 	${LUA_SOURCES}
 	${DUMB_SOURCES}
 	${SLADE_SOURCES}

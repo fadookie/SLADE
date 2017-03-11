@@ -104,7 +104,7 @@ public:
 	void	onAnnouncement(Announcer* announcer, string event_name, MemChunk& event_data);
 
 	// For scripting (to hide some parameters)
-	Archive* openFile(const char* filename) { return openArchive(filename); }
+	Archive* s_OpenFile(const char* filename) { return openArchive(filename); }
 };
 
 // Define for less cumbersome ArchiveManager::getInstance()

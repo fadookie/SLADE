@@ -33,6 +33,7 @@
 #include "General/Misc.h"
 #include "General/UndoRedo.h"
 #include "General/Clipboard.h"
+#include "General/Scripting.h"
 
 /* Archive Directory Layout:
  * ---------------------
@@ -80,6 +81,7 @@ ArchiveTreeNode::ArchiveTreeNode(ArchiveTreeNode* parent) : STreeNode(parent)
  *******************************************************************/
 ArchiveTreeNode::~ArchiveTreeNode()
 {
+	Scripting::invalidate(this);
 }
 
 /* ArchiveTreeNode::addChild
@@ -481,6 +483,9 @@ bool ArchiveTreeNode::merge(ArchiveTreeNode* node, unsigned position, int state)
 	return true;
 }
 
+/* ArchiveTreeNode::exportTo
+ * Exports all entries and subdirectories as files+folders to [path]
+ *******************************************************************/
 bool ArchiveTreeNode::exportTo(string path)
 {
 	// Create directory if needed
@@ -507,6 +512,30 @@ bool ArchiveTreeNode::exportTo(string path)
 		((ArchiveTreeNode*)children[a])->exportTo(path + "/" + children[a]->getName());
 
 	return true;
+}
+
+/* ArchiveTreeNode::s_GetEntries
+ * Returns a list of all entries in this dir
+ * -- For scripting purposes only, avoid using this in actual code --
+ *******************************************************************/
+vector<ArchiveEntry*> ArchiveTreeNode::s_GetEntries()
+{
+	vector<ArchiveEntry*> list;
+	for (auto e : entries)
+		list.push_back(e.get());
+	return list;
+}
+
+/* ArchiveTreeNode::s_GetSubDirs
+ * Returns a list of all subdirs of this dir
+ * -- For scripting purposes only, avoid using this in actual code --
+ *******************************************************************/
+vector<ArchiveTreeNode*> ArchiveTreeNode::s_GetSubDirs()
+{
+	vector<ArchiveTreeNode*> list;
+	for (auto s : children)
+		list.push_back((ArchiveTreeNode*)s);
+	return list;
 }
 
 
@@ -801,6 +830,7 @@ Archive::~Archive()
 		delete dir_root;
 	if (parent)
 		parent->unlock();
+	Scripting::invalidate(this);
 }
 
 /* Archive::getFilename

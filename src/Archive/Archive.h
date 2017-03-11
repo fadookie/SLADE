@@ -52,6 +52,11 @@ public:
 	bool				merge(ArchiveTreeNode* node, unsigned position = 0xFFFFFFFF, int state = 2);
 
 	bool	exportTo(string path);
+
+	// For scripting
+	vector<ArchiveEntry*>		s_GetEntries();
+	vector<ArchiveTreeNode*>	s_GetSubDirs();
+	int							s_EntryIndex(ArchiveEntry* entry) { return entryIndex(entry); }
 };
 
 // Define archive types
@@ -242,7 +247,8 @@ public:
 	virtual vector<ArchiveEntry*>	findModifiedEntries(ArchiveTreeNode* dir = NULL);
 
 	// For scripting
-	vector<ArchiveEntry*>	allEntries() { vector<ArchiveEntry*> list; getEntryTreeAsList(list); return list; }
+	vector<ArchiveEntry*>	s_AllEntries() { vector<ArchiveEntry*> list; getEntryTreeAsList(list); return list; }
+	ArchiveTreeNode*		s_GetDir(string path) { return getDir(path); }
 };
 
 // Base class for list-based archive formats

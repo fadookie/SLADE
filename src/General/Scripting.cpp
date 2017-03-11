@@ -34,6 +34,8 @@
 #include "Archive/Formats/All.h"
 #include "External/duktape/dukglue/dukglue.h"
 #include "General/Console/Console.h"
+#include "MainEditor/MainWindow.h"
+#include "UI/TextEditor/TextEditor.h"
 
 
 /*******************************************************************
@@ -44,68 +46,108 @@ namespace Scripting
 	duk_context*	context = nullptr;
 	ArchiveManager	archive_manager;
 	string			error;
+
+	// Testing
+	string	prev_script_test;
 }
+
+
+/*******************************************************************
+ * SCRIPTINTERFACE STRUCT
+ *
+ * This is so that we can set up a namespace for all the general
+ * global functions in scripts
+ *******************************************************************/
+struct ScriptInterface
+{
+	// Log a message to the console
+	void logMessage(const char* message)
+	{
+		LOG_MESSAGE(1, message);
+	}
+
+	// Get the global error message
+	string globalError()
+	{
+		return Global::error;
+	}
+
+	// Show a message box
+	void messageBox(string title, string message)
+	{
+		wxMessageBox(message, title);
+	}
+
+	// Prompt for a string
+	string promptString(string title, string message, string default_value)
+	{
+		return wxGetTextFromUser(message.c_str(), title.c_str(), default_value.c_str());
+	}
+
+	// Prompt for a number
+	int promptNumber(string title, string message, int default_value, int min, int max)
+	{
+		return (int)wxGetNumberFromUser(message.c_str(), "", title.c_str(), default_value, min, max);
+	}
+
+	// Prompt for a yes/no answer
+	bool promptYesNo(string title, string message)
+	{
+		return (wxMessageBox(message, title, wxYES_NO | wxICON_QUESTION) == wxYES);
+	}
+
+	// Returns the global archive manager
+	ArchiveManager* archiveManager()
+	{
+		return ArchiveManager::getInstance();
+	}
+
+	// Returns the current archive open in the UI
+	Archive* currentArchive()
+	{
+		return theMainWindow->getCurrentArchive();
+	}
+
+	// Returns the current entry open in the UI
+	ArchiveEntry* currentEntry()
+	{
+		return theMainWindow->getCurrentEntry();
+	}
+
+	// Returns the currently selected entries in the current archive
+	vector<ArchiveEntry*> currentEntrySelection()
+	{
+		return theMainWindow->getCurrentEntrySelection();
+	}
+};
 
 /*******************************************************************
  * SCRIPTING NAMESPACE FUNCTIONS
  *******************************************************************/
 namespace Scripting
 {
-	struct ScriptInterface
+	void registerInterface()
 	{
-		// Log a message to the console
-		void logMessage(const char* message)
-		{
-			LOG_MESSAGE(1, message);
-		}
+		dukglue_register_constructor<ScriptInterface>(context, "SLADEScriptInterface");
 
-		// Get the global error message
-		string globalError()
-		{
-			return Global::error;
-		}
+		dukglue_register_method(context, &ScriptInterface::logMessage,				"logMessage");
+		dukglue_register_method(context, &ScriptInterface::messageBox,				"messageBox");
+		dukglue_register_method(context, &ScriptInterface::promptString,			"promptString");
+		dukglue_register_method(context, &ScriptInterface::promptNumber,			"promptNumber");
+		dukglue_register_method(context, &ScriptInterface::promptYesNo,				"promptYesNo");
+		dukglue_register_method(context, &ScriptInterface::currentArchive,			"getCurrentArchive");
+		dukglue_register_method(context, &ScriptInterface::currentEntry,			"getCurrentEntry");
+		dukglue_register_method(context, &ScriptInterface::currentEntrySelection,	"getCurrentEntrySelection");
 
-		// Prompt for a string
-		string promptString(string title, string message, string default_value)
-		{
-			return wxGetTextFromUser(message.c_str(), title.c_str(), default_value.c_str());
-		}
-
-		// Prompt for a number
-		int promptNumber(string title, string message, int default_value, int min, int max)
-		{
-			return (int)wxGetNumberFromUser(message.c_str(), "", title.c_str(), default_value, min, max);
-		}
-
-		// Prompt for a yes/no answer
-		bool promptYesNo(string title, string message)
-		{
-			return (wxMessageBox(message, title, wxYES_NO | MB_ICONQUESTION) == wxYES);
-		}
-
-		// Returns the global archive manager
-		ArchiveManager* archiveManager()
-		{
-			return ArchiveManager::getInstance();
-		}
-
-		static void registerInterface()
-		{
-			dukglue_register_constructor<ScriptInterface>(context, "SLADEScriptInterface");
-			dukglue_register_method(context, &ScriptInterface::logMessage, "logMessage");
-			dukglue_register_method(context, &ScriptInterface::globalError, "globalError");
-			dukglue_register_method(context, &ScriptInterface::promptString, "promptString");
-			dukglue_register_method(context, &ScriptInterface::promptNumber, "promptNumber");
-			dukglue_register_method(context, &ScriptInterface::promptYesNo, "promptYesNo");
-
-			dukglue_register_property(context, &ScriptInterface::archiveManager, nullptr, "archiveManager");
-		}
-	};
+		dukglue_register_property(context, &ScriptInterface::archiveManager, nullptr,	"archiveManager");
+		dukglue_register_property(context, &ScriptInterface::globalError, nullptr,		"globalError");
+	}
 
 	void registerArchiveManager()
 	{
-		dukglue_register_method(context, &ArchiveManager::openFile, "openFile");
-		dukglue_register_method(context, &ArchiveManager::numArchives, "numArchives");
+		dukglue_register_method(context, &ArchiveManager::s_OpenFile,	"openFile");
+		dukglue_register_method(context, &ArchiveManager::numArchives,	"numArchives");
+		dukglue_register_method(context, &ArchiveManager::closeAll,		"closeAll");
 		dukglue_register_method<ArchiveManager, Archive*, int>(
 			context,
 			&ArchiveManager::getArchive,
@@ -116,13 +158,17 @@ namespace Scripting
 			&ArchiveManager::closeArchive,
 			"closeArchive"
 		);
-		dukglue_register_method(context, &ArchiveManager::closeAll, "closeAll");
 	}
 
 	void registerArchive()
 	{
-		dukglue_register_method(context, &Archive::getFilename, "getFilename");
-		dukglue_register_method(context, &Archive::allEntries, "allEntries");
+		dukglue_register_method(context, &Archive::getFilename,		"getFilename");
+		dukglue_register_method(context, &Archive::s_AllEntries,	"allEntries");
+		dukglue_register_method(context, &Archive::s_GetDir,		"getDir");
+
+		dukglue_register_property(context, &Archive::isModified,	nullptr, "modified");
+		dukglue_register_property(context, &Archive::isOnDisk,		nullptr, "onDisk");
+		dukglue_register_property(context, &Archive::isReadOnly,	nullptr, "readOnly");
 
 		// Register all subclasses
 		// (perhaps it'd be a good idea to make Archive not abstract and handle
@@ -153,13 +199,26 @@ namespace Scripting
 
 	void registerArchiveEntry()
 	{
-		dukglue_register_constructor<ArchiveEntry, string, int>(context, "ArchiveEntry");
-		dukglue_register_method(context, &ArchiveEntry::getName, "getName");
-		dukglue_register_method(context, &ArchiveEntry::getUpperName, "getUpperName");
-		dukglue_register_method(context, &ArchiveEntry::getUpperNameNoExt, "getUpperNameNoExt");
-		dukglue_register_method(context, &ArchiveEntry::getPath, "getPath");
-		dukglue_register_method(context, &ArchiveEntry::getSizeString, "getSizeString");
-		dukglue_register_method(context, &ArchiveEntry::getTypeString, "getTypeString");
+		dukglue_register_method(context, &ArchiveEntry::getName,			"getName");
+		dukglue_register_method(context, &ArchiveEntry::getUpperName,		"getUpperName");
+		dukglue_register_method(context, &ArchiveEntry::getUpperNameNoExt,	"getUpperNameNoExt");
+		dukglue_register_method(context, &ArchiveEntry::getPath,			"getPath");
+		dukglue_register_method(context, &ArchiveEntry::getSizeString,		"getSizeString");
+		dukglue_register_method(context, &ArchiveEntry::getTypeString,		"getTypeString");
+	}
+
+	void registerArchiveTreeNode()
+	{
+		dukglue_register_method(context, &ArchiveTreeNode::getArchive,		"getArchive");
+		dukglue_register_method(context, &ArchiveTreeNode::getName,			"getName");
+		dukglue_register_method(context, &ArchiveTreeNode::numEntries,		"numEntries");
+		dukglue_register_method(context, &ArchiveTreeNode::s_GetEntries,	"getEntries");
+		dukglue_register_method(context, &ArchiveTreeNode::s_EntryIndex,	"entryIndex");
+		dukglue_register_method<ArchiveTreeNode, ArchiveEntry*, unsigned>(
+			context,
+			&ArchiveTreeNode::getEntry,
+			"getEntry"
+		);
 	}
 }
 
@@ -174,15 +233,28 @@ bool Scripting::init()
 		return false;
 
 	// Register general functions from script interface class
-	// (This is just to group general SLADE scripting functions
-	//  under a 'slade' object, eg. "slade.logMessage("blah");")
-	ScriptInterface::registerInterface();
-	runScript("var slade = new SLADEScriptInterface();");
+	registerInterface();
 
 	// Register classes
 	registerArchiveEntry();
 	registerArchive();
 	registerArchiveManager();
+
+	// Initialise scripting environment
+	auto script_init_entry = theArchiveManager->programResourceArchive()->entryAtPath("scripts/init.js");
+	if (script_init_entry)
+	{
+		auto script = wxString::From8BitData(
+			(const char*)script_init_entry->getData(),
+			script_init_entry->getSize()
+		);
+
+		if (!runScript(script))
+		{
+			LOG_MESSAGE(1, "Error initialising scripting environment: %s", error);
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -223,6 +295,43 @@ bool Scripting::runScript(const string& script)
 	return ok;
 }
 
+/* Scripting::invalidate
+ * Invalidates [object] in the scripting context
+ *******************************************************************/
+void Scripting::invalidate(void* object)
+{
+	dukglue_invalidate_object(context, object);
+}
+
+void Scripting::openScriptTestDialog(wxWindow* parent)
+{
+	wxDialog dlg(
+		parent,
+		-1,
+		"SLADEScript Test",
+		wxDefaultPosition,
+		wxSize(800, 600),
+		wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	);
+
+	auto sizer = new wxBoxSizer(wxVERTICAL);
+	dlg.SetSizer(sizer);
+
+	auto text_editor = new TextEditor(&dlg, -1);
+	text_editor->SetText(prev_script_test);
+	text_editor->setLanguage(TextLanguage::getLanguageByName("sladescript"));
+	sizer->Add(text_editor, 1, wxEXPAND | wxALL, 10);
+	sizer->Add(dlg.CreateButtonSizer(wxOK | wxCANCEL), 0, wxEXPAND | wxALL, 10);
+
+	dlg.CenterOnParent();
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		prev_script_test = text_editor->GetText();
+		if (!runScript(prev_script_test))
+			wxMessageBox(error, "Script Error", wxOK | wxICON_ERROR, parent);
+	}
+}
+
 
 /*******************************************************************
  * CONSOLE COMMANDS
@@ -245,29 +354,31 @@ CONSOLE_COMMAND(exec_script_file, 1, false)
 	}
 }
 
-
-/* Example script for testing:
-
-// Prompt for archive file path
-var path = slade.promptString("Open Archive", "Enter full path to archive:", "");
-
-// Open it
-var archive = slade.archiveManager.openFile(path);
-
-// Check it opened ok
-if (archive == null)
-	slade.logMessage("Archive not opened: " + slade.globalError());
-else {
-	slade.logMessage("Archive opened successfully");
-
-	// List all entries
-	archive.allEntries().forEach(function(entry) {
-		slade.logMessage(entry.getPath(true) + " (" + entry.getSizeString() + ", " + entry.getTypeString() + ")");
-	});
-
-	// Prompt to close
-	if (slade.promptYesNo("Close Archive", "Do you want to close the archive now?"))
-		slade.archiveManager.closeArchive(archive);
+CONSOLE_COMMAND(script_test, 0, false)
+{
+	Scripting::openScriptTestDialog(theMainWindow);
 }
 
-*/
+CONSOLE_COMMAND(exec_script_res, 1, false)
+{
+	auto path = S_FMT("scripts/%s", args[0]);
+	auto script_init_entry = theArchiveManager->programResourceArchive()->entryAtPath(path);
+	if (script_init_entry)
+	{
+		auto script = wxString::From8BitData(
+			(const char*)script_init_entry->getData(),
+			script_init_entry->getSize()
+		);
+
+		if (!Scripting::runScript(script))
+			theConsole->logMessage(S_FMT("Error initialising scripting environment: %s", Scripting::error));
+	}
+	else
+		theConsole->logMessage(S_FMT("Resource script \"scripts/%s\" not found", args[0]));
+}
+
+CONSOLE_COMMAND(script_reset, 0, true)
+{
+	Scripting::close();
+	Scripting::init();
+}
