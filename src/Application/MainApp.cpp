@@ -927,6 +927,8 @@ bool MainApp::singleInstanceCheck()
 			connection->Disconnect();
 		}
 
+		delete client;
+
 		return false;
 	}
 

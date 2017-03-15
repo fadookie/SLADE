@@ -55,6 +55,7 @@
  * VARIABLES
  *******************************************************************/
 CVAR(Bool, archive_load_data, false, CVAR_SAVE)
+CVAR(Bool, backup_archives, true, CVAR_SAVE)
 bool Archive::save_backup = true;
 
 
@@ -784,7 +785,8 @@ public:
 			if (dir && cb_tree)
 				dir->merge(cb_tree->getTree(), 0, 0);
 
-			dir->getDirEntry()->setState(0);
+			if (dir)
+				dir->getDirEntry()->setState(0);
 
 			return !!dir;
 		}
@@ -1089,7 +1091,7 @@ bool Archive::save(string filename)
 			// No filename is given, but the archive has a filename, so overwrite it (and make a backup)
 
 			// Create backup
-			if (wxFileName::FileExists(this->filename) && save_backup)
+			if (backup_archives && wxFileName::FileExists(this->filename) && save_backup)
 			{
 				// Copy current file contents to new backup file
 				string bakfile = this->filename + ".bak";
