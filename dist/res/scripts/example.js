@@ -1,7 +1,12 @@
 
 function example1() {
-    // Prompt for archive file path
-    var path = slade.promptString("Open Archive", "Enter full path to archive:", "");
+    // Browse for archive file to open
+    var path = slade.browseFile("Open Archive", slade.archiveManager.getArchiveExtensionsString(), "");
+    if (path == "")
+    {
+        slade.logMessage("No archive selected");
+        return;
+    }
 
     // Open it
     var archive = slade.archiveManager.openFile(path);

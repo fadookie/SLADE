@@ -36,6 +36,7 @@
 #include "General/Console/Console.h"
 #include "MainEditor/MainWindow.h"
 #include "UI/TextEditor/TextEditor.h"
+#include "Utility/SFileDialog.h"
 
 
 /*******************************************************************
@@ -46,6 +47,7 @@ namespace Scripting
 	duk_context*	context = nullptr;
 	ArchiveManager	archive_manager;
 	string			error;
+	wxWindow*		current_window = nullptr;
 
 	// Testing
 	string	prev_script_test;
@@ -75,13 +77,18 @@ struct ScriptInterface
 	// Show a message box
 	void messageBox(string title, string message)
 	{
-		wxMessageBox(message, title);
+		wxMessageBox(message, title, 5L, Scripting::current_window);
 	}
 
 	// Prompt for a string
 	string promptString(string title, string message, string default_value)
 	{
-		return wxGetTextFromUser(message.c_str(), title.c_str(), default_value.c_str());
+		return wxGetTextFromUser(
+			message.c_str(),
+			title.c_str(),
+			default_value.c_str(),
+			Scripting::current_window
+		);
 	}
 
 	// Prompt for a number
@@ -94,6 +101,24 @@ struct ScriptInterface
 	bool promptYesNo(string title, string message)
 	{
 		return (wxMessageBox(message, title, wxYES_NO | wxICON_QUESTION) == wxYES);
+	}
+
+	// Browse for a single file
+	string browseFile(string title, string extensions, string filename)
+	{
+		SFileDialog::fd_info_t inf;
+		SFileDialog::openFile(inf, title, extensions, Scripting::current_window, filename);
+		return inf.filenames.empty() ? "" : inf.filenames[0];
+	}
+
+	// Browse for multiple files
+	vector<string> browseFiles(string title, string extensions)
+	{
+		SFileDialog::fd_info_t inf;
+		vector<string> filenames;
+		if (SFileDialog::openFiles(inf, title, extensions, Scripting::current_window))
+			filenames.assign(inf.filenames.begin(), inf.filenames.end());
+		return filenames;
 	}
 
 	// Returns the global archive manager
@@ -119,6 +144,33 @@ struct ScriptInterface
 	{
 		return theMainWindow->getCurrentEntrySelection();
 	}
+
+	// Switch to the tab for [archive], opening it if necessary
+	bool showArchive(Archive* archive)
+	{
+		if (!archive)
+			return false;
+
+		theMainWindow->getArchiveManagerPanel()->openTab(archive);
+		return true;
+	}
+
+	// Show [entry]
+	bool showEntry(ArchiveEntry* entry)
+	{
+		return theMainWindow->getArchiveManagerPanel()->showEntry(entry);
+	}
+
+
+
+	// Raw Duktape functions
+	duk_ret_t getMCBuffer(duk_context* ctx)
+	{
+		auto mc = (MemChunk*)duk_require_pointer(ctx, 0);
+		if (mc)
+			Scripting::pushBuffer(*mc);
+		return 1;
+	}
 };
 
 /*******************************************************************
@@ -135,9 +187,13 @@ namespace Scripting
 		dukglue_register_method(context, &ScriptInterface::promptString,			"promptString");
 		dukglue_register_method(context, &ScriptInterface::promptNumber,			"promptNumber");
 		dukglue_register_method(context, &ScriptInterface::promptYesNo,				"promptYesNo");
+		dukglue_register_method(context, &ScriptInterface::browseFile,				"browseFile");
+		dukglue_register_method(context, &ScriptInterface::browseFiles,				"browseFiles");
 		dukglue_register_method(context, &ScriptInterface::currentArchive,			"getCurrentArchive");
 		dukglue_register_method(context, &ScriptInterface::currentEntry,			"getCurrentEntry");
 		dukglue_register_method(context, &ScriptInterface::currentEntrySelection,	"getCurrentEntrySelection");
+		dukglue_register_method(context, &ScriptInterface::showArchive,				"showArchive");
+		dukglue_register_method(context, &ScriptInterface::showEntry,				"showEntry");
 
 		dukglue_register_property(context, &ScriptInterface::archiveManager, nullptr,	"archiveManager");
 		dukglue_register_property(context, &ScriptInterface::globalError, nullptr,		"globalError");
@@ -158,13 +214,22 @@ namespace Scripting
 			&ArchiveManager::closeArchive,
 			"closeArchive"
 		);
+		dukglue_register_method(
+			context,
+			&ArchiveManager::getArchiveExtensionsString,
+			"getArchiveExtensionsString"
+		);
 	}
 
 	void registerArchive()
 	{
-		dukglue_register_method(context, &Archive::getFilename,		"getFilename");
-		dukglue_register_method(context, &Archive::s_AllEntries,	"allEntries");
-		dukglue_register_method(context, &Archive::s_GetDir,		"getDir");
+		dukglue_register_method(context, &Archive::getFilename,					"getFilename");
+		dukglue_register_method(context, &Archive::s_AllEntries,				"allEntries");
+		dukglue_register_method(context, &Archive::s_GetDir,					"getDir");
+		dukglue_register_method(context, &Archive::s_CreateEntry,				"createEntry");
+		dukglue_register_method(context, &Archive::s_CreateEntryInNamespace,	"createEntryInNamespace");
+		dukglue_register_method(context, &Archive::removeEntry,					"removeEntry");
+		dukglue_register_method(context, &Archive::renameEntry,					"renameEntry");
 
 		dukglue_register_property(context, &Archive::isModified,	nullptr, "modified");
 		dukglue_register_property(context, &Archive::isOnDisk,		nullptr, "onDisk");
@@ -205,6 +270,7 @@ namespace Scripting
 		dukglue_register_method(context, &ArchiveEntry::getPath,			"getPath");
 		dukglue_register_method(context, &ArchiveEntry::getSizeString,		"getSizeString");
 		dukglue_register_method(context, &ArchiveEntry::getTypeString,		"getTypeString");
+		dukglue_register_method(context, &ArchiveEntry::getType,			"getType");
 	}
 
 	void registerArchiveTreeNode()
@@ -219,6 +285,12 @@ namespace Scripting
 			&ArchiveTreeNode::getEntry,
 			"getEntry"
 		);
+	}
+
+	void registerEntryType()
+	{
+		dukglue_register_property(context, &EntryType::getId, nullptr, "id");
+		dukglue_register_property(context, &EntryType::getName, nullptr, "name");
 	}
 }
 
@@ -236,7 +308,9 @@ bool Scripting::init()
 	registerInterface();
 
 	// Register classes
+	registerEntryType();
 	registerArchiveEntry();
+	registerArchiveTreeNode();
 	registerArchive();
 	registerArchiveManager();
 
@@ -249,7 +323,7 @@ bool Scripting::init()
 			script_init_entry->getSize()
 		);
 
-		if (!runScript(script))
+		if (!runScript(script, true))
 		{
 			LOG_MESSAGE(1, "Error initialising scripting environment: %s", error);
 			return false;
@@ -282,16 +356,25 @@ string Scripting::getError()
  * Runs [script] and returns true on success or false if an error
  * occurred
  *******************************************************************/
-bool Scripting::runScript(const string& script)
+bool Scripting::runScript(const string& script, bool use_global_context)
 {
-	duk_push_lstring(context, script.c_str(), script.length());
-	bool ok = true;
-	if (duk_peval(context) != 0)
+	// Create context for script if not using the global one
+	duk_context* script_context = context;
+	if (!use_global_context)
 	{
-		error = duk_safe_to_string(context, -1);
+		duk_push_thread(context);
+		duk_context* script_context = duk_get_context(context, -1);
+	}
+
+	duk_push_lstring(script_context, script.c_str(), script.length());
+	bool ok = true;
+	if (duk_peval(script_context) != 0)
+	{
+		error = duk_safe_to_string(script_context, -1);
 		ok = false;
 	}
-	duk_pop(context);
+	duk_pop(script_context);
+
 	return ok;
 }
 
@@ -301,6 +384,30 @@ bool Scripting::runScript(const string& script)
 void Scripting::invalidate(void* object)
 {
 	dukglue_invalidate_object(context, object);
+}
+
+/* Scripting::setCurrentWindow
+ * Sets the 'current' scripting window, used as the parent for
+ * script-launched dialogs, etc.
+ *******************************************************************/
+void Scripting::setCurrentWindow(wxWindow* window)
+{
+	current_window = window;
+}
+
+bool Scripting::pushBuffer(MemChunk& mc)
+{
+	return pushBuffer(mc.getData(), mc.getSize());
+}
+
+bool Scripting::pushBuffer(const uint8_t* data, unsigned size)
+{
+	auto buf = duk_push_fixed_buffer(context, size);
+	memcpy(buf, data, size);
+	duk_push_buffer_object(context, -1, 0, 1, DUK_BUFOBJ_UINT8ARRAY);
+	duk_remove(context, -2);
+
+	return true;
 }
 
 void Scripting::openScriptTestDialog(wxWindow* parent)

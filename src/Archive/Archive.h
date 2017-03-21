@@ -249,6 +249,8 @@ public:
 	// For scripting
 	vector<ArchiveEntry*>	s_AllEntries() { vector<ArchiveEntry*> list; getEntryTreeAsList(list); return list; }
 	ArchiveTreeNode*		s_GetDir(string path) { return getDir(path); }
+	ArchiveEntry*			s_CreateEntry(string full_path, int position);
+	ArchiveEntry*			s_CreateEntryInNamespace(string name, string ns);
 };
 
 // Base class for list-based archive formats

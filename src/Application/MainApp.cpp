@@ -1012,7 +1012,6 @@ bool MainApp::OnInit()
 	}
 
 	// Init scripting
-	//Lua::init();
 	Scripting::init();
 
 	// Calculate scaling factor (from system ppi)

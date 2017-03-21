@@ -1909,24 +1909,49 @@ void ArchiveManagerPanel::goToBookmark(long index)
 	// Get the selected bookmark entry
 	ArchiveEntry* bookmark = theArchiveManager->getBookmark(list_bookmarks->selectedItems()[0]);
 
+	// Show it
+	showEntry(bookmark);
+
+	//// Check it's valid
+	//if (!bookmark)
+	//	return;
+
+	//// Open its parent archive in a tab
+	//openTab(bookmark->getParent());
+
+	//// Get the opened tab (should be an ArchivePanel unless something went wrong)
+	//wxWindow* tab = stc_archives->GetPage(stc_archives->GetSelection());
+
+	//// Check it's an archive panel
+	//if (!(S_CMP(tab->GetName(), "archive")))
+	//	return;
+
+	//// Finally, open the entry
+	//((ArchivePanel*)tab)->openEntry(bookmark, true);
+	//if (bookmark->getType() != EntryType::folderType())
+	//	((ArchivePanel*)tab)->focusOnEntry(bookmark);
+}
+
+bool ArchiveManagerPanel::showEntry(ArchiveEntry* entry)
+{
 	// Check it's valid
-	if (!bookmark)
-		return;
+	if (!entry)
+		return false;
 
 	// Open its parent archive in a tab
-	openTab(bookmark->getParent());
+	openTab(entry->getParent());
 
 	// Get the opened tab (should be an ArchivePanel unless something went wrong)
 	wxWindow* tab = stc_archives->GetPage(stc_archives->GetSelection());
 
 	// Check it's an archive panel
 	if (!(S_CMP(tab->GetName(), "archive")))
-		return;
+		return false;
 
 	// Finally, open the entry
-	((ArchivePanel*)tab)->openEntry(bookmark, true);
-	if (bookmark->getType() != EntryType::folderType())
-		((ArchivePanel*)tab)->focusOnEntry(bookmark);
+	((ArchivePanel*)tab)->openEntry(entry, true);
+	if (entry->getType() != EntryType::folderType())
+		((ArchivePanel*)tab)->focusOnEntry(entry);
 }
 
 

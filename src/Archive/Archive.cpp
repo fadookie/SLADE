@@ -2066,6 +2066,17 @@ vector<ArchiveEntry*> Archive::findModifiedEntries(ArchiveTreeNode* dir)
 	return ret;
 }
 
+ArchiveEntry* Archive::s_CreateEntry(string full_path, int position)
+{
+	auto dir = getDir(full_path.BeforeLast('/'));
+	return addNewEntry(full_path.AfterLast('/'), position, dir);
+}
+
+ArchiveEntry* Archive::s_CreateEntryInNamespace(string name, string ns)
+{
+	return addNewEntry(name, ns);
+}
+
 /*******************************************************************
  * TREELESSARCHIVE CLASS FUNCTIONS
  *******************************************************************/

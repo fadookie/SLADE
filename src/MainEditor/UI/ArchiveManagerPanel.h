@@ -131,6 +131,7 @@ public:
 	void			openFiles(wxArrayString& files);
 	void			openDirAsArchive(string dir);
 	bool			redirectToTab(ArchiveEntry* entry);
+	bool			showEntry(ArchiveEntry* entry);
 
 	// General actions
 	bool	undo();
