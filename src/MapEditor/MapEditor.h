@@ -110,6 +110,8 @@ private:
 	// Helper for selectAdjacent3d
 	bool wallMatches(MapSide* side, uint8_t part, string tex);
 	void getAdjacentWalls3d(selection_3d_t item, vector<selection_3d_t>& list);
+	void getAdjacentFlats3d(selection_3d_t item, vector<selection_3d_t>& list);
+	void getAdjacent3d(selection_3d_t item, vector<selection_3d_t>& list);
 
 	// Helper for autoAlignX3d
 	void doAlignX3d(MapSide* side, int offset, string tex, vector<selection_3d_t>& walls_done, int tex_width);
@@ -273,9 +275,11 @@ public:
 	void	toggleUnpegged3d(bool lower);
 	void	copy3d(int type);
 	void	paste3d(int type);
+	void	floodFill3d(int type);
 	void	changeThingZ3d(int amount);
 	void	deleteThing3d();
 	void	changeScale3d(double amount, bool x);
+	void	changeHeight3d(int amount);
 
 	// Editor messages
 	unsigned	numEditorMessages();
@@ -302,6 +306,9 @@ public:
 	void	updateDisplay();
 	void	updateStatusText();
 	void	updateThingLists();
+
+	// For scripting
+	SLADEMap*	s_GetMap() { return &map; }
 };
 
 #endif//__MAP_EDITOR_H__

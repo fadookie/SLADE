@@ -296,6 +296,13 @@ public:
 	int		texUsageCount(string tex);
 	int		flatUsageCount(string tex);
 	int		thingTypeUsageCount(int type);
+
+	// For scripting
+	vector<MapVertex*>	s_GetVertices() { return vertices; }
+	vector<MapLine*>	s_GetLines() { return lines; }
+	vector<MapSide*>	s_GetSides() { return sides; }
+	vector<MapSector*>	s_GetSectors() { return sectors; }
+	vector<MapThing*>	s_GetThings() { return things; }
 };
 
 #endif //__SLADEMAP_H__
