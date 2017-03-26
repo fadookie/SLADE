@@ -35,8 +35,11 @@
 #include "External/duktape/dukglue/dukglue.h"
 #include "General/Console/Console.h"
 #include "MainEditor/MainWindow.h"
+#include "MapEditor/MapEditorWindow.h"
 #include "UI/TextEditor/TextEditor.h"
 #include "Utility/SFileDialog.h"
+#include "MapEditor/MapEditorWindow.h"
+#include "MapEditor/SLADEMap/SLADEMap.h"
 
 
 /*******************************************************************
@@ -161,6 +164,17 @@ struct ScriptInterface
 		return theMainWindow->getArchiveManagerPanel()->showEntry(entry);
 	}
 
+	// Returns the map editor
+	MapEditor* mapEditor()
+	{
+		return &(theMapEditor->mapEditor());
+	}
+
+	SLADEMap* currentMap()
+	{
+		return theMapEditor->mapEditor().s_GetMap();
+	}
+
 
 
 	// Raw Duktape functions
@@ -197,6 +211,8 @@ namespace Scripting
 
 		dukglue_register_property(context, &ScriptInterface::archiveManager, nullptr,	"archiveManager");
 		dukglue_register_property(context, &ScriptInterface::globalError, nullptr,		"globalError");
+		dukglue_register_property(context, &ScriptInterface::mapEditor, nullptr,		"mapEditor");
+		dukglue_register_property(context, &ScriptInterface::currentMap, nullptr,		"map");
 	}
 
 	void registerArchiveManager()
@@ -292,6 +308,93 @@ namespace Scripting
 		dukglue_register_property(context, &EntryType::getId, nullptr, "id");
 		dukglue_register_property(context, &EntryType::getName, nullptr, "name");
 	}
+
+	void registerSLADEMap()
+	{
+		dukglue_register_property(context, &SLADEMap::mapName, nullptr, "name");
+		dukglue_register_property(context, &SLADEMap::udmfNamespace, nullptr, "udmfNamespace");
+		dukglue_register_property(context, &SLADEMap::s_GetVertices, nullptr, "vertices");
+		dukglue_register_property(context, &SLADEMap::s_GetLines, nullptr, "linedefs");
+		dukglue_register_property(context, &SLADEMap::s_GetSides, nullptr, "sidedefs");
+		dukglue_register_property(context, &SLADEMap::s_GetSectors, nullptr, "sectors");
+		dukglue_register_property(context, &SLADEMap::s_GetThings, nullptr, "things");
+
+		dukglue_register_method(context, &SLADEMap::nVertices,	"numVertices");
+		dukglue_register_method(context, &SLADEMap::nLines,		"numLines");
+		dukglue_register_method(context, &SLADEMap::nSides,		"numSides");
+		dukglue_register_method(context, &SLADEMap::nSectors,	"numSectors");
+		dukglue_register_method(context, &SLADEMap::nThings,	"numThings");
+	}
+
+	void registerMapEditor()
+	{
+		dukglue_register_property(context, &MapEditor::editMode, nullptr, "editMode");
+		dukglue_register_property(context, &MapEditor::sectorEditMode, nullptr, "sectorEditMode");
+		dukglue_register_property(context, &MapEditor::gridSize, nullptr, "gridSize");
+	}
+
+	void registerMapObject()
+	{
+		dukglue_register_property(context, &MapObject::getIndex, nullptr, "index");
+
+		dukglue_register_method(context, &MapObject::getTypeName, "getTypeName");
+		dukglue_register_method(context, &MapObject::hasProp, "hasProperty");
+		dukglue_register_method(context, &MapObject::boolProperty, "boolProperty");
+		dukglue_register_method(context, &MapObject::intProperty, "intProperty");
+		dukglue_register_method(context, &MapObject::floatProperty, "floatProperty");
+		dukglue_register_method(context, &MapObject::stringProperty, "stringProperty");
+		dukglue_register_method(context, &MapObject::setBoolProperty, "setBoolProperty");
+		dukglue_register_method(context, &MapObject::setIntProperty, "setIntProperty");
+		dukglue_register_method(context, &MapObject::setFloatProperty, "setFloatProperty");
+		dukglue_register_method(context, &MapObject::setStringProperty, "setStringProperty");
+
+		registerMapVertex();
+		registerMapLine();
+		registerMapSide();
+		registerMapThing();
+		
+		dukglue_set_base_class<MapObject, MapSector>(context);
+	}
+
+	void registerMapVertex()
+	{
+		dukglue_set_base_class<MapObject, MapVertex>(context);
+
+		dukglue_register_property(context, &MapVertex::xPos, nullptr, "x");
+		dukglue_register_property(context, &MapVertex::yPos, nullptr, "y");
+	}
+
+	void registerMapLine()
+	{
+		dukglue_set_base_class<MapObject, MapLine>(context);
+
+		dukglue_register_property(context, &MapLine::x1, nullptr, "x1");
+		dukglue_register_property(context, &MapLine::y1, nullptr, "y1");
+		dukglue_register_property(context, &MapLine::x2, nullptr, "x2");
+		dukglue_register_property(context, &MapLine::y2, nullptr, "y2");
+		dukglue_register_property(context, &MapLine::v1, nullptr, "vertex1");
+		dukglue_register_property(context, &MapLine::v2, nullptr, "vertex2");
+		dukglue_register_property(context, &MapLine::s1, nullptr, "side1");
+		dukglue_register_property(context, &MapLine::s2, nullptr, "side2");
+
+		dukglue_register_method(context, &MapLine::getLength, "length");
+	}
+
+	void registerMapSide()
+	{
+		dukglue_set_base_class<MapObject, MapSide>(context);
+
+		dukglue_register_property(context, &MapSide::getSector, nullptr, "sector");
+		dukglue_register_property(context, &MapSide::getParentLine, nullptr, "line");
+	}
+
+	void registerMapThing()
+	{
+		dukglue_set_base_class<MapObject, MapThing>(context);
+
+		dukglue_register_property(context, &MapThing::xPos, nullptr, "x");
+		dukglue_register_property(context, &MapThing::yPos, nullptr, "y");
+	}
 }
 
 /* Scripting::init
@@ -313,6 +416,9 @@ bool Scripting::init()
 	registerArchiveTreeNode();
 	registerArchive();
 	registerArchiveManager();
+	registerSLADEMap();
+	registerMapEditor();
+	registerMapObject();
 
 	// Initialise scripting environment
 	auto script_init_entry = theArchiveManager->programResourceArchive()->entryAtPath("scripts/init.js");
@@ -463,7 +569,7 @@ CONSOLE_COMMAND(exec_script_file, 1, false)
 
 CONSOLE_COMMAND(script_test, 0, false)
 {
-	Scripting::openScriptTestDialog(theMainWindow);
+	Scripting::openScriptTestDialog(Scripting::current_window);
 }
 
 CONSOLE_COMMAND(exec_script_res, 1, false)

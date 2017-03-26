@@ -306,6 +306,9 @@ public:
 	void	updateDisplay();
 	void	updateStatusText();
 	void	updateThingLists();
+
+	// For scripting
+	SLADEMap*	s_GetMap() { return &map; }
 };
 
 #endif//__MAP_EDITOR_H__

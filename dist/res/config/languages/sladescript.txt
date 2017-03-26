@@ -9,53 +9,95 @@ sladescript : cstyle
         var, function
     }
 
-    properties = 
-    {
-        // General
-        slade, archiveManager, globalError,
+    // types =
+    // {
+    //     Boolean, Number, String, Object,
 
-        // Archive
-        modified, onDisk, readOnly
-    }
+    //     SLADEScriptInterface, ArchiveManager, Archive, ArchiveEntry, ArchiveDir, EntryType,
+    //     MapEditor, SLADEMap, MapVertex, MapLine, MapSide, MapSector, MapThing, MapObject
+    // }
+
+    // properties = 
+    // {
+    //     // General
+    //     slade, archiveManager, globalError, mapEditor, map,
+
+    //     // Archive
+    //     modified, onDisk, readOnly,
+
+    //     // EntryType
+    //     id, name,
+
+    //     // Map
+    //     udmfNamespace, vertices, linedefs, sidedefs, sectors, things,
+
+    //     // MapEditor
+    //     editMode, sectorEditMode, gridSize
+    // }
 
     functions
     {
         // SLADE general
-        void logMessage = "string message";
-        void messageBox = "string title, string message";
-        string promptString = "string title, string message, string default_value";
-        int promptNumber = "string title, string message, int default_value, int min, int max";
-        bool promptYesNo = "string title, string message";
+        logMessage = "String message";
+        messageBox = "String title, String message";
+        String promptString = "String title, String message, String default_value";
+        Number promptNumber = "String title, String message, Number default_value, Number min, Number max";
+        Boolean promptYesNo = "String title, String message";
         Archive currentArchive;
         ArchiveEntry currentEntry;
         ArchiveEntry[] currentEntrySelection;
 
         // ArchiveManager
-        Archive openFile = "string filename";
-        int numArchives;
-        void closeAll;
-        Archive getArchive = "int index";
-        bool closeArchive = "Archive archive";
+        Archive openFile = "String filename";
+        Number numArchives;
+        closeAll;
+        Archive getArchive = "Number index";
+        Boolean closeArchive = "Archive archive";
+        String getArchiveExtensionsString;
 
         // Archive
-        string getFilename = "bool full_path";
+        String getFilename = "Boolean full_path";
         ArchiveEntry[] allEntries;
-        ArchiveDir getDir = "string path, ArchiveDir base";
+        ArchiveDir getDir = "String path, ArchiveDir base";
+        ArchiveEntry createEntry = "String full_path, Number position";
+        ArchiveEntry createEntryInNamespace = "String name, String namespace";
+        Boolean removeEntry = "ArchiveEntry entry";
+        Boolean renameEntry = "ArchiveEntry entry, String name";
 
         // ArchiveEntry
-        string getName = "bool cut_extension";
-        string getUpperName;
-        string getUpperNameNoExt;
-        string getPath = "bool include_name";
-        string getSizeString;
-        string getTypeString;
+        String getName = "Boolean cut_extension";
+        String getUpperName;
+        String getUpperNameNoExt;
+        String getPath = "Boolean include_name";
+        String getSizeString;
+        String getTypeString;
+        EntryType getType;
 
         // ArchiveDir (ArchiveTreeNode)
         Archive getArchive;
-        string getName;
-        int numEntries = "bool include_subdirs";
-        int entryIndex = "ArchiveEntry entry";
+        String getName;
+        Number numEntries = "Boolean include_subdirs";
+        Number entryIndex = "ArchiveEntry entry";
         ArchiveEntry[] getEntries;
-        ArchiveEntry getEntry = "int index";
+        ArchiveEntry getEntry = "Number index";
+
+        // Map (SLADEMap)
+        Number numVertices;
+        Number numLines;
+        Number numSides;
+        Number numSectors;
+        Number numThings;
+
+        // MapObject
+        String getTypeName;
+        Boolean hasProperty = "String key";
+        Boolean boolProperty = "String key";
+        Number intProperty = "String key";
+        Number floatProperty = "String key";
+        String stringProperty = "String key";
+        setBoolProperty = "String key, Boolean value";
+        setIntProperty = "String key, Number value";
+        setFloatProperty = "String key, Number value";
+        setStringProperty = "String key, String value";
     }
 }
