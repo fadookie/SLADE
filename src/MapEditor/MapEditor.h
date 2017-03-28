@@ -308,7 +308,11 @@ public:
 	void	updateThingLists();
 
 	// For scripting
-	SLADEMap*	s_GetMap() { return &map; }
+	SLADEMap*			s_GetMap() { return &map; }
+	vector<MapVertex*>	s_SelectedVertices();
+	vector<MapLine*>	s_SelectedLines();
+	vector<MapSector*>	s_SelectedSectors();
+	vector<MapThing*>	s_SelectedThings();
 };
 
 #endif//__MAP_EDITOR_H__

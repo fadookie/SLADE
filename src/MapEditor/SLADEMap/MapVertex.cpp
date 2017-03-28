@@ -40,25 +40,25 @@
 /* MapVertex::MapVertex
  * MapVertex class constructor
  *******************************************************************/
-MapVertex::MapVertex(SLADEMap* parent) : MapObject(MOBJ_VERTEX, parent)
+MapVertex::MapVertex(SLADEMap* parent) :
+	MapObject(MOBJ_VERTEX, parent),
+	x{ 0 },
+	y{ 0 }
 {
-	// Init variables
-	this->x = 0;
-	this->y = 0;
 }
 
 /* MapVertex::MapVertex
  * MapVertex class constructor
  *******************************************************************/
-MapVertex::MapVertex(double x, double y, SLADEMap* parent) : MapObject(MOBJ_VERTEX, parent)
+MapVertex::MapVertex(double x, double y, SLADEMap* parent) :
+	MapObject(MOBJ_VERTEX, parent),
+	x{ x },
+	y{ y }
 {
-	// Init variables
-	this->x = x;
-	this->y = y;
 }
 
 /* MapVertex::~MapVertex
- * MapVertex class constructor
+ * MapVertex class destructor
  *******************************************************************/
 MapVertex::~MapVertex()
 {
@@ -146,6 +146,17 @@ void MapVertex::setFloatProperty(string key, double value)
 		y = value;
 	else
 		return MapObject::setFloatProperty(key, value);
+}
+
+/* MapVertex::scriptCanModifyProp
+ * Returns true if the property [key] can be modified via script
+ *******************************************************************/
+bool MapVertex::scriptCanModifyProp(const string& key)
+{
+	if (key == "x" || key == "y")
+		return false;
+
+	return true;
 }
 
 /* MapVertex::connectLine

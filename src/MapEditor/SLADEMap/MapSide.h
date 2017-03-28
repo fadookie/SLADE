@@ -66,6 +66,7 @@ public:
 	void	setIntProperty(string key, int value);
 	string	stringProperty(string key);
 	void	setStringProperty(string key, string value);
+	bool	scriptCanModifyProp(const string& key) override;
 
 	void	writeBackup(mobj_backup_t* backup);
 	void	readBackup(mobj_backup_t* backup);

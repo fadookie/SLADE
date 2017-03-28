@@ -45,6 +45,7 @@ public:
 	double	floatProperty(string key);
 	void	setIntProperty(string key, int value);
 	void	setFloatProperty(string key, double value);
+	bool	scriptCanModifyProp(const string& key) override;
 
 	void		connectLine(MapLine* line);
 	void		disconnectLine(MapLine* line);

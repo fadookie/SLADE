@@ -305,19 +305,19 @@ namespace Scripting
 
 	void registerEntryType()
 	{
-		dukglue_register_property(context, &EntryType::getId, nullptr, "id");
-		dukglue_register_property(context, &EntryType::getName, nullptr, "name");
+		dukglue_register_property(context, &EntryType::getId, nullptr,		"id");
+		dukglue_register_property(context, &EntryType::getName, nullptr,	"name");
 	}
 
 	void registerSLADEMap()
 	{
-		dukglue_register_property(context, &SLADEMap::mapName, nullptr, "name");
-		dukglue_register_property(context, &SLADEMap::udmfNamespace, nullptr, "udmfNamespace");
-		dukglue_register_property(context, &SLADEMap::s_GetVertices, nullptr, "vertices");
-		dukglue_register_property(context, &SLADEMap::s_GetLines, nullptr, "linedefs");
-		dukglue_register_property(context, &SLADEMap::s_GetSides, nullptr, "sidedefs");
-		dukglue_register_property(context, &SLADEMap::s_GetSectors, nullptr, "sectors");
-		dukglue_register_property(context, &SLADEMap::s_GetThings, nullptr, "things");
+		dukglue_register_property(context, &SLADEMap::mapName, nullptr,			"name");
+		dukglue_register_property(context, &SLADEMap::udmfNamespace, nullptr,	"udmfNamespace");
+		dukglue_register_property(context, &SLADEMap::s_GetVertices, nullptr,	"vertices");
+		dukglue_register_property(context, &SLADEMap::s_GetLines, nullptr,		"linedefs");
+		dukglue_register_property(context, &SLADEMap::s_GetSides, nullptr,		"sidedefs");
+		dukglue_register_property(context, &SLADEMap::s_GetSectors, nullptr,	"sectors");
+		dukglue_register_property(context, &SLADEMap::s_GetThings, nullptr,		"things");
 
 		dukglue_register_method(context, &SLADEMap::nVertices,	"numVertices");
 		dukglue_register_method(context, &SLADEMap::nLines,		"numLines");
@@ -328,9 +328,14 @@ namespace Scripting
 
 	void registerMapEditor()
 	{
-		dukglue_register_property(context, &MapEditor::editMode, nullptr, "editMode");
-		dukglue_register_property(context, &MapEditor::sectorEditMode, nullptr, "sectorEditMode");
-		dukglue_register_property(context, &MapEditor::gridSize, nullptr, "gridSize");
+		dukglue_register_property(context, &MapEditor::editMode, nullptr,		"editMode");
+		dukglue_register_property(context, &MapEditor::sectorEditMode, nullptr,	"sectorEditMode");
+		dukglue_register_property(context, &MapEditor::gridSize, nullptr,		"gridSize");
+
+		dukglue_register_method(context, &MapEditor::s_SelectedVertices,	"getSelectedVertices");
+		dukglue_register_method(context, &MapEditor::s_SelectedLines,		"getSelectedLines");
+		dukglue_register_method(context, &MapEditor::s_SelectedSectors,		"getSelectedSectors");
+		dukglue_register_method(context, &MapEditor::s_SelectedThings,		"getSelectedThings");
 	}
 
 	void registerMapVertex()
@@ -345,57 +350,71 @@ namespace Scripting
 	{
 		dukglue_set_base_class<MapObject, MapLine>(context);
 
-		dukglue_register_property(context, &MapLine::x1, nullptr, "x1");
-		dukglue_register_property(context, &MapLine::y1, nullptr, "y1");
-		dukglue_register_property(context, &MapLine::x2, nullptr, "x2");
-		dukglue_register_property(context, &MapLine::y2, nullptr, "y2");
-		dukglue_register_property(context, &MapLine::v1, nullptr, "vertex1");
-		dukglue_register_property(context, &MapLine::v2, nullptr, "vertex2");
-		dukglue_register_property(context, &MapLine::s1, nullptr, "side1");
-		dukglue_register_property(context, &MapLine::s2, nullptr, "side2");
-		dukglue_register_property(context, &MapLine::getSpecial, nullptr, "special");
+		dukglue_register_property(context, &MapLine::x1, nullptr,			"x1");
+		dukglue_register_property(context, &MapLine::y1, nullptr,			"y1");
+		dukglue_register_property(context, &MapLine::x2, nullptr,			"x2");
+		dukglue_register_property(context, &MapLine::y2, nullptr,			"y2");
+		dukglue_register_property(context, &MapLine::v1, nullptr,			 "vertex1");
+		dukglue_register_property(context, &MapLine::v2, nullptr,			"vertex2");
+		dukglue_register_property(context, &MapLine::s1, nullptr,			"side1");
+		dukglue_register_property(context, &MapLine::s2, nullptr,			"side2");
+		dukglue_register_property(context, &MapLine::getSpecial, nullptr,	"special");
 
-		dukglue_register_method(context, &MapLine::getLength, "length");
+		dukglue_register_method(context, &MapLine::getLength,	"length");
+		dukglue_register_method(context, &MapLine::frontSector,	"frontSector");
+		dukglue_register_method(context, &MapLine::backSector,	"backSector");
 	}
 
 	void registerMapSide()
 	{
 		dukglue_set_base_class<MapObject, MapSide>(context);
 
-		dukglue_register_property(context, &MapSide::getSector, nullptr, "sector");
-		dukglue_register_property(context, &MapSide::getParentLine, nullptr, "line");
-		dukglue_register_property(context, &MapSide::getTexLower, nullptr, "textureBottom");
-		dukglue_register_property(context, &MapSide::getTexMiddle, nullptr, "textureMiddle");
-		dukglue_register_property(context, &MapSide::getTexUpper, nullptr, "textureTop");
+		dukglue_register_property(context, &MapSide::getSector, nullptr,		"sector");
+		dukglue_register_property(context, &MapSide::getParentLine, nullptr,	"line");
+		dukglue_register_property(context, &MapSide::getTexLower, nullptr,		"textureBottom");
+		dukglue_register_property(context, &MapSide::getTexMiddle, nullptr,		"textureMiddle");
+		dukglue_register_property(context, &MapSide::getTexUpper, nullptr,		"textureTop");
+		dukglue_register_property(context, &MapSide::getOffsetX, nullptr,		"offsetX");
+		dukglue_register_property(context, &MapSide::getOffsetY, nullptr,		"offsetY");
 	}
 
 	void registerMapSector()
 	{
 		dukglue_set_base_class<MapObject, MapSector>(context);
+
+		dukglue_register_property(context, &MapSector::getFloorTex, nullptr,		"textureFloor");
+		dukglue_register_property(context, &MapSector::getCeilingTex, nullptr,		"textureCeiling");
+		dukglue_register_property(context, &MapSector::getFloorHeight, nullptr,		"heightFloor");
+		dukglue_register_property(context, &MapSector::getCeilingHeight, nullptr,	"heightCeiling");
+		dukglue_register_property(context, &MapSector::getLightLevel, nullptr,		"lightLevel");
+		dukglue_register_property(context, &MapSector::getSpecial, nullptr,			"special");
+		dukglue_register_property(context, &MapSector::getTag, nullptr,				"id");
 	}
 
 	void registerMapThing()
 	{
 		dukglue_set_base_class<MapObject, MapThing>(context);
 
-		dukglue_register_property(context, &MapThing::xPos, nullptr, "x");
-		dukglue_register_property(context, &MapThing::yPos, nullptr, "y");
+		dukglue_register_property(context, &MapThing::xPos, nullptr,		"x");
+		dukglue_register_property(context, &MapThing::yPos, nullptr,		"y");
+		dukglue_register_property(context, &MapThing::getType, nullptr,		"type");
+		dukglue_register_property(context, &MapThing::getAngle, nullptr,	"angle");
 	}
 
 	void registerMapObject()
 	{
 		dukglue_register_property(context, &MapObject::getIndex, nullptr, "index");
 
-		dukglue_register_method(context, &MapObject::getTypeName, "getTypeName");
-		dukglue_register_method(context, &MapObject::hasProp, "hasProperty");
-		dukglue_register_method(context, &MapObject::boolProperty, "boolProperty");
-		dukglue_register_method(context, &MapObject::intProperty, "intProperty");
-		dukglue_register_method(context, &MapObject::floatProperty, "floatProperty");
-		dukglue_register_method(context, &MapObject::stringProperty, "stringProperty");
-		dukglue_register_method(context, &MapObject::setBoolProperty, "setBoolProperty");
-		dukglue_register_method(context, &MapObject::setIntProperty, "setIntProperty");
-		dukglue_register_method(context, &MapObject::setFloatProperty, "setFloatProperty");
-		dukglue_register_method(context, &MapObject::setStringProperty, "setStringProperty");
+		dukglue_register_method(context, &MapObject::getTypeName,			"getTypeName");
+		dukglue_register_method(context, &MapObject::hasProp,				"hasProperty");
+		dukglue_register_method(context, &MapObject::boolProperty,			"boolProperty");
+		dukglue_register_method(context, &MapObject::intProperty,			"intProperty");
+		dukglue_register_method(context, &MapObject::floatProperty,			"floatProperty");
+		dukglue_register_method(context, &MapObject::stringProperty,		"stringProperty");
+		dukglue_register_method(context, &MapObject::s_SetBoolProperty,		"setBoolProperty");
+		dukglue_register_method(context, &MapObject::s_SetIntProperty,		"setIntProperty");
+		dukglue_register_method(context, &MapObject::s_SetFloatProperty,	"setFloatProperty");
+		dukglue_register_method(context, &MapObject::s_SetStringProperty,	"setStringProperty");
 
 		registerMapVertex();
 		registerMapLine();

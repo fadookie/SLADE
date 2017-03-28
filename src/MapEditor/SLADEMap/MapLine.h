@@ -104,6 +104,7 @@ public:
 	void	setIntProperty(string key, int value);
 	void	setFloatProperty(string key, double value);
 	void	setStringProperty(string key, string value);
+	bool	scriptCanModifyProp(const string& key) override;
 
 	void	setS1(MapSide* side);
 	void	setS2(MapSide* side);

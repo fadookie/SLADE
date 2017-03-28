@@ -5739,6 +5739,34 @@ void MapEditor::resetPlayerStart()
 	pstart->setIntProperty("angle", player_start_dir);
 }
 
+vector<MapVertex*> MapEditor::s_SelectedVertices()
+{
+	vector<MapVertex*> list;
+	getSelectedVertices(list);
+	return list;
+}
+
+vector<MapLine*> MapEditor::s_SelectedLines()
+{
+	vector<MapLine*> list;
+	getSelectedLines(list);
+	return list;
+}
+
+vector<MapSector*> MapEditor::s_SelectedSectors()
+{
+	vector<MapSector*> list;
+	getSelectedSectors(list);
+	return list;
+}
+
+vector<MapThing*> MapEditor::s_SelectedThings()
+{
+	vector<MapThing*> list;
+	getSelectedThings(list);
+	return list;
+}
+
 
 #pragma region CONSOLE COMMANDS
 

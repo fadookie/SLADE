@@ -460,3 +460,35 @@ bool MapObject::multiStringProperty(vector<MapObject*>& objects, string prop, st
 	value = first;
 	return true;
 }
+
+void MapObject::s_SetBoolProperty(string key, bool value)
+{
+	if (scriptCanModifyProp(key))
+		setBoolProperty(key, value);
+	else
+		LOG_MESSAGE(1, "%s boolean property \"%s\" can not be modified via script", getTypeName(), key);
+}
+
+void MapObject::s_SetIntProperty(string key, int value)
+{
+	if (scriptCanModifyProp(key))
+		setIntProperty(key, value);
+	else
+		LOG_MESSAGE(1, "%s integer property \"%s\" can not be modified via script", getTypeName(), key);
+}
+
+void MapObject::s_SetFloatProperty(string key, double value)
+{
+	if (scriptCanModifyProp(key))
+		setFloatProperty(key, value);
+	else
+		LOG_MESSAGE(1, "%s float property \"%s\" can not be modified via script", getTypeName(), key);
+}
+
+void MapObject::s_SetStringProperty(string key, string value)
+{
+	if (scriptCanModifyProp(key))
+		setStringProperty(key, value);
+	else
+		LOG_MESSAGE(1, "%s string property \"%s\" can not be modified via script", getTypeName(), key);
+}
