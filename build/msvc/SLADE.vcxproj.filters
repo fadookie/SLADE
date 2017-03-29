@@ -1419,6 +1419,9 @@
     <ClCompile Include="..\..\src\Audio\AudioTags.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Dialogs\SScriptDialog.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -2497,6 +2500,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Audio\AudioTags.h">
       <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Dialogs\SScriptDialog.h">
+      <Filter>Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

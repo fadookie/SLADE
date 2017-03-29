@@ -51,6 +51,7 @@
 #include "UI/SToolBar/SToolBar.h"
 #include "UI/UndoManagerHistoryPanel.h"
 #include "Utility/SFileDialog.h"
+#include "Dialogs/SScriptDialog.h"
 
 
 /*******************************************************************
@@ -229,6 +230,11 @@ void MapEditorWindow::setupMenu()
 	theApp->getAction("mapw_show_fullmap")->addToMenu(menu_view);
 	theApp->getAction("mapw_show_item")->addToMenu(menu_view);
 	menu->Append(menu_view, "View");
+
+	// Tools menu
+	wxMenu* menu_tools = new wxMenu("");
+	theApp->getAction("mapw_runscript")->addToMenu(menu_tools);
+	menu->Append(menu_tools, "&Tools");
 
 	SetMenuBar(menu);
 }
@@ -1308,6 +1314,13 @@ bool MapEditorWindow::handleAction(string id)
 		}
 
 		return true;
+	}
+
+	// Tools->Run Script
+	else if (id == "mapw_runscript")
+	{
+		SScriptDialog dlg(this);
+		dlg.ShowModal();
 	}
 	
 	return false;

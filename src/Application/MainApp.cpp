@@ -660,6 +660,7 @@ void MainApp::initActions()
 	new SAction("main_onlinedocs", "Online &Documentation", "wiki", "View SLADE documentation online");
 	new SAction("main_about", "&About", "logo", "Informaton about SLADE", "", 0, wxID_ABOUT);
 	new SAction("main_updatecheck", "Check for Updates...", "", "Check online for updates");
+	new SAction("main_runscript", "Run Script...", "text", "Open the Script Manager to write/run a SLADE script");
 
 	// ArchiveManagerPanel
 	new SAction("aman_newwad", "New Wad Archive", "newarchive", "Create a new Doom Wad Archive", "Ctrl+Shift+W");
@@ -923,6 +924,7 @@ void MainApp::initActions()
 	new SAction("mapw_mirror_y", "Mirror Vertically", "flip", "Mirror the selected objects vertically", "kb:me2d_mirror_y");
 	new SAction("mapw_mirror_x", "Mirror Horizontally", "mirror", "Mirror the selected objects horizontally", "kb:me2d_mirror_x");
 	new SAction("mapw_run_map_here", "Run Map from Here", "run", "Run the current map, starting at the current cursor position");
+	new SAction("mapw_runscript", "Run Script...", "text", "Open the Script Manager to write/run a SLADE script");
 
 	// Script editor
 	new SAction("mapw_script_save", "Save", "save", "Save changes to scripts");

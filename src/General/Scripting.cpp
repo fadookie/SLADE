@@ -40,6 +40,7 @@
 #include "Utility/SFileDialog.h"
 #include "MapEditor/MapEditorWindow.h"
 #include "MapEditor/SLADEMap/SLADEMap.h"
+#include "Dialogs/SScriptDialog.h"
 
 
 /*******************************************************************
@@ -545,31 +546,8 @@ bool Scripting::pushBuffer(const uint8_t* data, unsigned size)
 
 void Scripting::openScriptTestDialog(wxWindow* parent)
 {
-	wxDialog dlg(
-		parent,
-		-1,
-		"SLADEScript Test",
-		wxDefaultPosition,
-		wxSize(800, 600),
-		wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
-	);
-
-	auto sizer = new wxBoxSizer(wxVERTICAL);
-	dlg.SetSizer(sizer);
-
-	auto text_editor = new TextEditor(&dlg, -1);
-	text_editor->SetText(prev_script_test);
-	text_editor->setLanguage(TextLanguage::getLanguageByName("sladescript"));
-	sizer->Add(text_editor, 1, wxEXPAND | wxALL, 10);
-	sizer->Add(dlg.CreateButtonSizer(wxOK | wxCANCEL), 0, wxEXPAND | wxALL, 10);
-
-	dlg.CenterOnParent();
-	if (dlg.ShowModal() == wxID_OK)
-	{
-		prev_script_test = text_editor->GetText();
-		if (!runScript(prev_script_test))
-			wxMessageBox(error, "Script Error", wxOK | wxICON_ERROR, parent);
-	}
+	SScriptDialog dlg(parent);
+	dlg.ShowModal();
 }
 
 
