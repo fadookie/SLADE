@@ -37,6 +37,7 @@ struct doom64thing_t
 	short	tid;
 };
 
+class ThingType;
 class MapThing : public MapObject
 {
 	friend class SLADEMap;
@@ -80,6 +81,9 @@ public:
 
 		return Debuggable(S_FMT("<thing %u>", index));
 	}
+
+	// For scripting
+	ThingType*	s_TypeInfo();
 };
 
 #endif //__MAPTHING_H__

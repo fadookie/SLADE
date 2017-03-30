@@ -38,7 +38,6 @@
 #include "MapEditor/MapEditorWindow.h"
 #include "UI/TextEditor/TextEditor.h"
 #include "Utility/SFileDialog.h"
-#include "MapEditor/MapEditorWindow.h"
 #include "MapEditor/SLADEMap/SLADEMap.h"
 #include "Dialogs/SScriptDialog.h"
 
@@ -400,6 +399,7 @@ namespace Scripting
 		dukglue_register_property(context, &MapThing::yPos, nullptr,		"y");
 		dukglue_register_property(context, &MapThing::getType, nullptr,		"type");
 		dukglue_register_property(context, &MapThing::getAngle, nullptr,	"angle");
+		dukglue_register_property(context, &MapThing::s_TypeInfo, nullptr,	"typeInfo");
 	}
 
 	void registerMapObject()
@@ -422,6 +422,26 @@ namespace Scripting
 		registerMapSide();
 		registerMapSector();
 		registerMapThing();
+	}
+
+	void registerThingType()
+	{
+		dukglue_register_property(context, &ThingType::getName, nullptr,		"name");
+		dukglue_register_property(context, &ThingType::getGroup, nullptr,		"group");
+		dukglue_register_property(context, &ThingType::getRadius, nullptr,		"radius");
+		dukglue_register_property(context, &ThingType::getHeight, nullptr,		"height");
+		dukglue_register_property(context, &ThingType::getScaleX, nullptr,		"scaleX");
+		dukglue_register_property(context, &ThingType::getScaleY, nullptr,		"scaleY");
+		dukglue_register_property(context, &ThingType::isAngled, nullptr,		"angled");
+		dukglue_register_property(context, &ThingType::isHanging, nullptr,		"hanging");
+		dukglue_register_property(context, &ThingType::isFullbright, nullptr,	"fullbright");
+		dukglue_register_property(context, &ThingType::isDecoration, nullptr,	"decoration");
+		dukglue_register_property(context, &ThingType::isSolid, nullptr,		"solid");
+		dukglue_register_property(context, &ThingType::needsTag, nullptr,		"tagged");
+		dukglue_register_property(context, &ThingType::getSprite, nullptr,		"sprite");
+		dukglue_register_property(context, &ThingType::getIcon, nullptr,		"icon");
+		dukglue_register_property(context, &ThingType::getTranslation, nullptr,	"translation");
+		dukglue_register_property(context, &ThingType::getPalette, nullptr,		"palette");
 	}
 }
 
@@ -447,6 +467,7 @@ bool Scripting::init()
 	registerSLADEMap();
 	registerMapEditor();
 	registerMapObject();
+	registerThingType();
 
 	// Initialise scripting environment
 	auto script_init_entry = theArchiveManager->programResourceArchive()->entryAtPath("scripts/init.js");
@@ -497,7 +518,7 @@ bool Scripting::runScript(const string& script, bool use_global_context)
 	if (!use_global_context)
 	{
 		duk_push_thread(context);
-		duk_context* script_context = duk_get_context(context, -1);
+		script_context = duk_get_context(context, -1);
 	}
 
 	duk_push_lstring(script_context, script.c_str(), script.length());

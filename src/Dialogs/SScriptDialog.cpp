@@ -159,7 +159,8 @@ void SScriptDialog::populateScriptsTree()
 		for (unsigned a = 0; a < dir->numEntries(); a++)
 		{
 			auto entry = dir->getEntry(a);
-			tree->AppendItem(node, entry->getName(true), -1, -1, new ScriptTreeItemData(entry));
+			if (entry->getName(true) != "init")
+				tree->AppendItem(node, entry->getName(true), -1, -1, new ScriptTreeItemData(entry));
 		}
 	};
 

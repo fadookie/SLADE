@@ -30,6 +30,7 @@
 #include "Main.h"
 #include "MapThing.h"
 #include "MainApp.h"
+#include "MapEditor/GameConfiguration/GameConfiguration.h"
 
 
 /*******************************************************************
@@ -235,4 +236,12 @@ void MapThing::readBackup(mobj_backup_t* backup)
 
 	// Angle
 	angle = backup->props_internal["angle"].getIntValue();
+}
+
+/* MapThing::s_TypeInfo
+ * Returns the type info (ThingType) for this thing
+ *******************************************************************/
+ThingType* MapThing::s_TypeInfo()
+{
+	return theGameConfiguration->thingType(type);
 }
