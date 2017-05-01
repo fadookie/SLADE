@@ -28,6 +28,8 @@
  * INCLUDES
  *******************************************************************/
 #include "Main.h"
+#include "App.h"
+#include "SLADEWxApp.h"
 #include "MainWindow.h"
 #include "UI/ConsolePanel.h"
 #include "Archive/ArchiveManager.h"
@@ -37,32 +39,33 @@
 #include "UI/BaseResourceChooser.h"
 #include "Dialogs/Preferences/PreferencesDialog.h"
 #include "Utility/Tokenizer.h"
-#include "UI/SplashWindow.h"
-#include "MapEditor/MapEditorWindow.h"
-#include "Dialogs/MapEditorConfigDialog.h"
+#include "MapEditor/MapEditor.h"
 #include "UI/SToolBar/SToolBar.h"
 #include "UI/UndoManagerHistoryPanel.h"
-#include "UI/ArchivePanel.h"
+#include "ArchivePanel.h"
 #include "General/Misc.h"
 #include "UI/SAuiTabArt.h"
 #include "UI/STabCtrl.h"
-#include "UI/TextureXEditor/TextureXEditor.h"
+#include "TextureXEditor/TextureXEditor.h"
 #include "UI/PaletteChooser.h"
+#include "ArchiveManagerPanel.h"
 #include "Dialogs/SScriptDialog.h"
 
 #ifdef USE_WEBVIEW_STARTPAGE
-#include "UI/DocsPage.h"
+#include "DocsPage.h"
 #endif
+
 
 /*******************************************************************
  * VARIABLES
  *******************************************************************/
 string main_window_layout = "";
-MainWindow* MainWindow::instance = NULL;
 CVAR(Bool, show_start_page, true, CVAR_SAVE);
 CVAR(String, global_palette, "", CVAR_SAVE);
 CVAR(Bool, mw_maximized, true, CVAR_SAVE);
 CVAR(Bool, confirm_exit, true, CVAR_SAVE);
+
+DECLARE_APP(SLADEWxApp)
 
 
 /*******************************************************************
@@ -76,7 +79,7 @@ public:
 	MainWindowDropTarget() {}
 	~MainWindowDropTarget() {}
 
-	bool OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
+	bool OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames) override
 	{
 		for (unsigned a = 0; a < filenames.size(); a++)
 			theArchiveManager->openArchive(filenames[a]);
@@ -102,7 +105,7 @@ MainWindow::MainWindow()
 	setupLayout();
 	SetDropTarget(new MainWindowDropTarget());
 #ifdef USE_WEBVIEW_STARTPAGE
-	docs_page = NULL;
+	docs_page = nullptr;
 #endif
 }
 
@@ -121,7 +124,7 @@ void MainWindow::loadLayout()
 {
 	// Open layout file
 	Tokenizer tz;
-	if (!tz.openFile(appPath("mainwindow.layout", DIR_USER)))
+	if (!tz.openFile(App::path("mainwindow.layout", App::Dir::User)))
 		return;
 
 	// Parse layout
@@ -147,7 +150,7 @@ void MainWindow::loadLayout()
 void MainWindow::saveLayout()
 {
 	// Open layout file
-	wxFile file(appPath("mainwindow.layout", DIR_USER), wxFile::write);
+	wxFile file(App::path("mainwindow.layout", App::Dir::User), wxFile::write);
 
 	// Write component layout
 
@@ -181,7 +184,7 @@ void MainWindow::setupLayout()
 	wxAuiPaneInfo p_inf;
 
 	// Set icon
-	string icon_filename = appPath("slade.ico", DIR_TEMP);
+	string icon_filename = App::path("slade.ico", App::Dir::Temp);
 	theArchiveManager->programResourceArchive()->getEntry("slade.ico")->exportFile(icon_filename);
 	SetIcon(wxIcon(icon_filename, wxBITMAP_TYPE_ICO));
 	wxRemoveFile(icon_filename);
@@ -257,7 +260,7 @@ void MainWindow::setupLayout()
 
 
 	// -- Undo History Panel --
-	panel_undo_history = new UndoManagerHistoryPanel(this, NULL);
+	panel_undo_history = new UndoManagerHistoryPanel(this, nullptr);
 
 	// Setup panel info & add panel
 	p_inf.DefaultPane();
@@ -276,39 +279,39 @@ void MainWindow::setupLayout()
 
 	// File menu
 	wxMenu* fileNewMenu = new wxMenu("");
-	theApp->getAction("aman_newwad")->addToMenu(fileNewMenu, "&Wad Archive");
-	theApp->getAction("aman_newzip")->addToMenu(fileNewMenu, "&Zip Archive");
-	theApp->getAction("aman_newmap")->addToMenu(fileNewMenu, "&Map");
+	SAction::fromId("aman_newwad")->addToMenu(fileNewMenu, "&Wad Archive");
+	SAction::fromId("aman_newzip")->addToMenu(fileNewMenu, "&Zip Archive");
+	SAction::fromId("aman_newmap")->addToMenu(fileNewMenu, "&Map");
 	wxMenu* fileMenu = new wxMenu("");
 	fileMenu->AppendSubMenu(fileNewMenu, "&New", "Create a new Archive");
-	theApp->getAction("aman_open")->addToMenu(fileMenu);
-	theApp->getAction("aman_opendir")->addToMenu(fileMenu);
+	SAction::fromId("aman_open")->addToMenu(fileMenu);
+	SAction::fromId("aman_opendir")->addToMenu(fileMenu);
 	fileMenu->AppendSeparator();
-	theApp->getAction("aman_save")->addToMenu(fileMenu);
-	theApp->getAction("aman_saveas")->addToMenu(fileMenu);
-	theApp->getAction("aman_saveall")->addToMenu(fileMenu);
+	SAction::fromId("aman_save")->addToMenu(fileMenu);
+	SAction::fromId("aman_saveas")->addToMenu(fileMenu);
+	SAction::fromId("aman_saveall")->addToMenu(fileMenu);
 	fileMenu->AppendSubMenu(panel_archivemanager->getRecentMenu(), "&Recent Files");
 	fileMenu->AppendSeparator();
-	theApp->getAction("aman_close")->addToMenu(fileMenu);
-	theApp->getAction("aman_closeall")->addToMenu(fileMenu);
+	SAction::fromId("aman_close")->addToMenu(fileMenu);
+	SAction::fromId("aman_closeall")->addToMenu(fileMenu);
 	fileMenu->AppendSeparator();
-	theApp->getAction("main_exit")->addToMenu(fileMenu);
+	SAction::fromId("main_exit")->addToMenu(fileMenu);
 	menu->Append(fileMenu, "&File");
 
 	// Edit menu
 	wxMenu* editorMenu = new wxMenu("");
-	theApp->getAction("main_undo")->addToMenu(editorMenu);
-	theApp->getAction("main_redo")->addToMenu(editorMenu);
+	SAction::fromId("main_undo")->addToMenu(editorMenu);
+	SAction::fromId("main_redo")->addToMenu(editorMenu);
 	editorMenu->AppendSeparator();
-	theApp->getAction("main_setbra")->addToMenu(editorMenu);
-	theApp->getAction("main_preferences")->addToMenu(editorMenu);
+	SAction::fromId("main_setbra")->addToMenu(editorMenu);
+	SAction::fromId("main_preferences")->addToMenu(editorMenu);
 	menu->Append(editorMenu, "E&dit");
 
 	// View menu
 	wxMenu* viewMenu = new wxMenu("");
-	theApp->getAction("main_showam")->addToMenu(viewMenu);
-	theApp->getAction("main_showconsole")->addToMenu(viewMenu);
-	theApp->getAction("main_showundohistory")->addToMenu(viewMenu);
+	SAction::fromId("main_showam")->addToMenu(viewMenu);
+	SAction::fromId("main_showconsole")->addToMenu(viewMenu);
+	SAction::fromId("main_showundohistory")->addToMenu(viewMenu);
 	menu->Append(viewMenu, "&View");
 
 	// Tools menu
@@ -318,10 +321,10 @@ void MainWindow::setupLayout()
 
 	// Help menu
 	wxMenu* helpMenu = new wxMenu("");
-	theApp->getAction("main_onlinedocs")->addToMenu(helpMenu);
-	theApp->getAction("main_about")->addToMenu(helpMenu);
+	SAction::fromId("main_onlinedocs")->addToMenu(helpMenu);
+	SAction::fromId("main_about")->addToMenu(helpMenu);
 #ifdef __WXMSW__
-	theApp->getAction("main_updatecheck")->addToMenu(helpMenu);
+	SAction::fromId("main_updatecheck")->addToMenu(helpMenu);
 #endif
 	menu->Append(helpMenu, "&Help");
 
@@ -457,14 +460,12 @@ void MainWindow::createStartPage(bool newtip)
 			tip = "Did you know? Something is wrong with the tips.txt file in your slade.pk3.";
 		else
 		{
-			int tipindex = 0;
+			int tipindex = lasttipindex;
 			if (newtip || lasttipindex == 0)
 			{
 				// Don't show same tip twice in a row
 				do { tipindex = 1 + (rand() % numtips); } while (tipindex == lasttipindex);
 			}
-			else
-				tipindex = lasttipindex;
 			
 			lasttipindex = tipindex;
 			for (int a = 0; a < tipindex; a++)
@@ -509,12 +510,12 @@ void MainWindow::createStartPage(bool newtip)
 
 	// Write html and images to temp folder
 	for (unsigned a = 0; a < export_entries.size(); a++)
-		export_entries[a]->exportFile(appPath(export_entries[a]->getName(), DIR_TEMP));
-	Icons::exportIconPNG(Icons::ENTRY, "archive", appPath("archive.png", DIR_TEMP));
-	Icons::exportIconPNG(Icons::ENTRY, "wad", appPath("wad.png", DIR_TEMP));
-	Icons::exportIconPNG(Icons::ENTRY, "zip", appPath("zip.png", DIR_TEMP));
-	Icons::exportIconPNG(Icons::ENTRY, "folder", appPath("folder.png", DIR_TEMP));
-	string html_file = appPath("startpage.htm", DIR_TEMP);
+		export_entries[a]->exportFile(App::path(export_entries[a]->getName(), App::Dir::Temp));
+	Icons::exportIconPNG(Icons::ENTRY, "archive", App::path("archive.png", App::Dir::Temp));
+	Icons::exportIconPNG(Icons::ENTRY, "wad", App::path("wad.png", App::Dir::Temp));
+	Icons::exportIconPNG(Icons::ENTRY, "zip", App::path("zip.png", App::Dir::Temp));
+	Icons::exportIconPNG(Icons::ENTRY, "folder", App::path("folder.png", App::Dir::Temp));
+	string html_file = App::path("startpage.htm", App::Dir::Temp);
 	wxFile outfile(html_file, wxFile::write);
 	outfile.Write(html);
 	outfile.Close();
@@ -598,8 +599,8 @@ void MainWindow::createStartPage(bool newtip)
 	html.Replace("#totd#", tip);
 
 	// Write html and images to temp folder
-	if (entry_logo) entry_logo->exportFile(appPath("logo.png", DIR_TEMP));
-	string html_file = appPath("startpage_basic.htm", DIR_TEMP);
+	if (entry_logo) entry_logo->exportFile(App::path("logo.png", App::Dir::Temp));
+	string html_file = App::path("startpage_basic.htm", App::Dir::Temp);
 	wxFile outfile(html_file, wxFile::write);
 	outfile.Write(html);
 	outfile.Close();
@@ -609,7 +610,7 @@ void MainWindow::createStartPage(bool newtip)
 
 	// Clean up
 	wxRemoveFile(html_file);
-	wxRemoveFile(appPath("logo.png", DIR_TEMP));
+	wxRemoveFile(App::path("logo.png", App::Dir::Temp));
 }
 #endif
 
@@ -627,8 +628,8 @@ bool MainWindow::exitProgram()
 	}
 
 	// Check if we can close the map editor
-	if (theMapEditor->IsShown())
-		if (!theMapEditor->Close())
+	if (MapEditor::windowWx()->IsShown())
+		if (!MapEditor::windowWx()->Close())
 			return false;
 
 	// Close all archives
@@ -646,60 +647,9 @@ bool MainWindow::exitProgram()
 	global_palette = palette_chooser->GetStringSelection();
 
 	// Exit application
-	wxTheApp->Exit();
+	App::exit(true);
 
 	return true;
-}
-
-/* MainWindow::getCurrentArchive
- * Returns the currently open archive (ie the current tab's archive,
- * if any)
- *******************************************************************/
-Archive* MainWindow::getCurrentArchive()
-{
-	return panel_archivemanager->currentArchive();
-}
-
-/* MainWindow::getCurrentEntry
- * Returns the currently open entry (current tab -> current entry
- * panel)
- *******************************************************************/
-ArchiveEntry* MainWindow::getCurrentEntry()
-{
-	return panel_archivemanager->currentEntry();
-}
-
-/* MainWindow::getCurrentEntrySelection
- * Returns a list of all currently selected entries, in the current
- * archive panel
- *******************************************************************/
-vector<ArchiveEntry*> MainWindow::getCurrentEntrySelection()
-{
-	return panel_archivemanager->currentEntrySelection();
-}
-
-/* MainWindow::openTextureEditor
- * Opens the texture editor for the current archive tab
- *******************************************************************/
-void MainWindow::openTextureEditor(Archive* archive, ArchiveEntry* entry)
-{
-	panel_archivemanager->openTextureTab(theArchiveManager->archiveIndex(archive), entry);
-}
-
-/* MainWindow::openMapEditor
- * Opens the map editor for the current archive tab
- *******************************************************************/
-void MainWindow::openMapEditor(Archive* archive)
-{
-	theMapEditor->chooseMap(archive);
-}
-
-/* MainWindow::openEntry
- * Opens [entry] in its own tab
- *******************************************************************/
-void MainWindow::openEntry(ArchiveEntry* entry)
-{
-	panel_archivemanager->openEntryTab(entry);
 }
 
 /* MainWindow::openDocs
@@ -854,7 +804,7 @@ bool MainWindow::handleAction(string id)
 		info.SetDescription("It's a Doom Editor");
 
 		// Set icon
-		string icon_filename = appPath("slade.ico", DIR_TEMP);
+		string icon_filename = App::path("slade.ico", App::Dir::Temp);
 		theArchiveManager->programResourceArchive()->getEntry("slade.ico")->exportFile(icon_filename);
 		info.SetIcon(wxIcon(icon_filename, wxBITMAP_TYPE_ICO));
 		wxRemoveFile(icon_filename);
@@ -881,7 +831,7 @@ bool MainWindow::handleAction(string id)
 	// Help->Check For Updates
 	if (id == "main_updatecheck")
 	{
-		theApp->checkForUpdates(true);
+		wxGetApp().checkForUpdates(true);
 		return true;
 	}
 
@@ -926,7 +876,8 @@ void MainWindow::onHTMLLinkClicked(wxEvent& e)
 		string rs = href.Mid(9);
 		unsigned long index = 0;
 		rs.ToULong(&index);
-		theApp->doAction("aman_recent", index);
+		SActionHandler::setWxIdOffset(index);
+		SActionHandler::doAction("aman_recent");
 		createStartPage();
 		html_startpage->Reload();
 	}
@@ -934,14 +885,14 @@ void MainWindow::onHTMLLinkClicked(wxEvent& e)
 	{
 		// Action
 		if (href.EndsWith("open"))
-			theApp->doAction("aman_open");
+			SActionHandler::doAction("aman_open");
 		else if (href.EndsWith("newwad"))
-			theApp->doAction("aman_newwad");
+			SActionHandler::doAction("aman_newwad");
 		else if (href.EndsWith("newzip"))
-			theApp->doAction("aman_newzip");
+			SActionHandler::doAction("aman_newzip");
 		else if (href.EndsWith("newmap"))
 		{
-			theApp->doAction("aman_newmap");
+			SActionHandler::doAction("aman_newmap");
 			return;
 		}
 		else if (href.EndsWith("reloadstartpage"))
@@ -951,7 +902,7 @@ void MainWindow::onHTMLLinkClicked(wxEvent& e)
 	else if (wxFileExists(href))
 	{
 		// Navigating to file, open it
-		string page = appPath("startpage.htm", DIR_TEMP);
+		string page = App::path("startpage.htm", App::Dir::Temp);
 		if (wxFileName(href).GetLongPath() != wxFileName(page).GetLongPath())
 			theArchiveManager->openArchive(href);
 		ev.Veto();
@@ -983,20 +934,20 @@ void MainWindow::onHTMLLinkClicked(wxEvent& e)
 		string rs = href.Mid(9);
 		unsigned long index = 0;
 		rs.ToULong(&index);
-		theApp->doAction("aman_recent", index);
+		SActionHandler::doAction("aman_recent", index);
 		createStartPage();
 	}
 	else if (href.StartsWith("action://"))
 	{
 		// Action
 		if (href.EndsWith("open"))
-			theApp->doAction("aman_open");
+			SActionHandler::doAction("aman_open");
 		else if (href.EndsWith("newwad"))
-			theApp->doAction("aman_newwad");
+			SActionHandler::doAction("aman_newwad");
 		else if (href.EndsWith("newzip"))
-			theApp->doAction("aman_newzip");
+			SActionHandler::doAction("aman_newzip");
 		else if (href.EndsWith("newmap"))
-			theApp->doAction("aman_newmap");
+			SActionHandler::doAction("aman_newmap");
 		else if (href.EndsWith("reloadstartpage"))
 			createStartPage();
 	}
