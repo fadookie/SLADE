@@ -1305,6 +1305,7 @@
     <ClCompile Include="..\..\src\MainEditor\UI\EntryPanel\SwitchesEntryPanel.cpp" />
     <ClCompile Include="..\..\src\MainEditor\UI\EntryPanel\TextEntryPanel.cpp" />
     <ClCompile Include="..\..\src\MainEditor\UI\MainWindow.cpp" />
+    <ClCompile Include="..\..\src\MainEditor\UI\StartPage.cpp" />
     <ClCompile Include="..\..\src\MainEditor\UI\TextureXEditor\PatchBrowser.cpp" />
     <ClCompile Include="..\..\src\MainEditor\UI\TextureXEditor\PatchTablePanel.cpp" />
     <ClCompile Include="..\..\src\MainEditor\UI\TextureXEditor\TextureEditorPanel.cpp" />
@@ -1779,6 +1780,7 @@
     <ClInclude Include="..\..\src\MainEditor\UI\EntryPanel\SwitchesEntryPanel.h" />
     <ClInclude Include="..\..\src\MainEditor\UI\EntryPanel\TextEntryPanel.h" />
     <ClInclude Include="..\..\src\MainEditor\UI\MainWindow.h" />
+    <ClInclude Include="..\..\src\MainEditor\UI\StartPage.h" />
     <ClInclude Include="..\..\src\MainEditor\UI\TextureXEditor\PatchBrowser.h" />
     <ClInclude Include="..\..\src\MainEditor\UI\TextureXEditor\PatchTablePanel.h" />
     <ClInclude Include="..\..\src\MainEditor\UI\TextureXEditor\TextureEditorPanel.h" />

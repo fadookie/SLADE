@@ -1,4 +1,3 @@
-22
 "Be sure to set up a Base Resource Archive. You can switch or manage Base Resource Archives from the 'Base Resource' toolbar."
 "The console can perform some useful functions. Press Ctrl+2 to bring it up and type 'cmdlist' for a list of valid commands."
 "Depending on the settings in Editor->Preferences, when an archive's tab is closed, the archive itself may remain open in the editor. Its tab can then be reopened by double clicking it in the Archive Manager."

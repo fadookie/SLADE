@@ -1,210 +1,119 @@
 <html>
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-<title>SLADE - It's a Doom Editor</title>
-<style type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>SLADE - It's a Doom Editor</title>
+  <style type="text/css">
+    /*#css#*/
+    
+    html {
+      margin: 0 auto;
+      max-width: 70em;
+      font-size: 0.92em;
+    }
 
-body, table, td {
-	font-family: 'Segoe UI', 'Nimbus Sans L', 'Nimbus Sans', 'Ubuntu', sans-serif;
-	font-size: 14px;
-	background: #e0eeff;
-}
+    div#title {
+      margin-bottom: 0.5em;
+    }
 
-table.box, td.box {
-	background-color: #FCFEFF;
-	padding-top: 0px;
-	padding-left: 0px;
-	padding-right: 4px;
-	padding-bottom: 0px;
-	border-spacing: 0px;
-}
+    div#back {
+      padding-bottom: 0.7em;
+      margin-bottom: 1.5em;
+      line-height: 1.3em;
+    }
 
-A, A:link, A:visited, A:hover, A:active {
-	font-weight: 600;
-	text-decoration: none;
-	font-size: inherit;
-	background-color: inherit;
-}
+    div#side {
+      width: 18em;
+      float: left;
+      padding-left: 2em;
+      /*padding-top: 2em;*/
+    }
 
-A:link, A:visited {
-	color: #0055cc;
-	background-color: inherit;
-	transition: all .1s ease-in;
-}
+    div#content {
+      margin-left: 21.5em;
+      padding-right: 2em;
+      /*padding-top: 2em;*/
+    }
 
-A:hover, A:active {
-	color: #99a4ff;
-	background-color: inherit;
-	transition: all .06s ease-out;
-}
+    div#links,
+    div#totd {
+      width: 22%;
+      display: inline-block;
+      margin-top: -1.8em;
+      vertical-align: top;
+    }
 
-div.main {
-	width: 800px;
-	text-align: left;
-	/*width: 60%;*/
-}
+    div#totd {
+      width: 54.9%;
+    }
 
-div.box, #sidebox, #recent {
-	background-color: #FCFEFF;
-	border-color: #ADBFD8;
-	border: 1px;
-	border-top-width: 0px;
-	border-bottom-width: 4px;
-	padding-top: 4px;
-	padding-bottom: 8px;
-	padding-left: 8px;
-	padding-right: 8px;
-	border-style: solid;
-	/*line-height: 1.5em;*/
-	margin-bottom: 8px;
-}
+    a.recent,
+    img.recent {
+      display: inline-block;
+      vertical-align: middle;
+      margin-bottom: 0px;
+    }
 
-#sidebox {
-	height: 72px;
-	border-color: #ADBFD8;
-}
+    img.recent {
+      margin-top: 0px;
+      margin-right: 0.5em;
+    }
 
-#recent {
-	/*height: 188px;*/
-	border-color: #ADBFD8;
-}
+    .link-left {
+      float: left;
+      width: 50%;
+    }
 
-div.boxhead {
-	border: 1px;
-	padding-left: 8px;
-	padding-right: 8px;
-	border-style: solid;
-	line-height: 1.5em;
-	font-weight: bold;
-	font-size: 14pt;
-	margin-bottom: 0px;
-	background-color: #7488AF;
-	color: #F2F6FF;
-	border-color: #64789F;/*#ADBFD8;*/
-}
+    .link-right {
+      float: right;
+      width: 50%;
+    }
 
-div.boxshadow {
-	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0,0,0,0));
-	height: 6px;
-}
+    a.refresh {
+      color: hsl(220, 100%, 97%);
+      margin-top: 0.3em;
+    }
 
-img {
-	padding-top: 2px;
-}
-</style>
+    a.refresh:hover {
+      color: hsl(40, 100%, 55%);
+    }
+  </style>
 </head>
+
 <body>
-<center>
+  <center><img src="logo.png"/></center>
+  <div id="side">
+    <div id="back">
+      <div id="title">Get Started</div>
+      <a href="action://open">Open Archive</a><br/>
+      <a href="action://newwad">Create Wad Archive</a><br/>
+      <a href="action://newzip">Create Zip Archive</a><br/>
+      <a href="action://newmap">Create New Map</a>
+    </div>
 
-<img src="logo.png"/>
+    <div id="back" class="side">
+      <div id="title">Links</div>
+      <a href="http://slade.mancubus.net" class="link-left">Home Page</a>
+      <a href="http://slade.mancubus.net/index.php?page=wiki" class="link-right">Documentation</a>
+      <br/>
+      <a href="http://slade.mancubus.net/index.php?page=downloads" class="link-left">Downloads</a>
+      <a href="https://github.com/sirjuddington/SLADE" class="link-right">GitHub</a>
+      <br/>
+    </div>
 
-<center>
-<div class='main'>
+    <div id="back" class="side">
+      <div id="title">Tip of the Day<span style="float: right;"><a href="action://reloadstartpage" class="refresh">&#x21bb;</a></span></div>
+      #totd#
+    </div>
+  </div>
 
-
-<table width=100%>
-<tr><td width='25%'>
-
-<div class='boxhead'>
-Get Started
-</div>
-<div id = 'sidebox'>
-<a href="action://open">Open Archive</a><br/>
-<a href="action://newwad">Create Wad Archive</a><br/>
-<a href="action://newzip">Create Zip Archive</a><br/>
-<a href="action://newmap">Create New Map</a>
-</div>
-
-</td><td width='25%'>
-
-<div class='boxhead'>
-Links
-</div>
-<div id='sidebox'>
-<a href="http://slade.mancubus.net">SLADE Homepage</a><br/>
-<a href="http://slade.mancubus.net/index.php?page=downloads">SLADE Downloads</a><br/>
-<a href="http://slade.mancubus.net/forum">SLADE Forums</a><br/>
-<a href="http://slade.mancubus.net/index.php?page=wiki">SLADE Wiki</a>
-</div>
-
-</td><td width='50%'>
-
-<div class='boxhead'>
-Tip Of The Day <span style="float: right;"><a href="action://reloadstartpage">+</a></span>
-</div>
-<div id='sidebox'>
-#totd#
-</div>
-
-</td></tr>
-<tr><td colspan="3">
-
-<div class='boxhead'>
-Recent Files
-</div>
-<div id='recent'>
-#recent#
-</div>
-
-</td></tr>
-</table>
-
-
-<!--
-<table width=100%>
-<tr><td width='30%'>
-
-<div class='boxhead'>
-Get Started
-</div>
-<div id = 'sidebox'>
-<a href="action://open">Open Archive</a><br/>
-<a href="action://newwad">Create Wad Archive</a><br/>
-<a href="action://newzip">Create Zip Archive</a><br/>
-<a href="action://newmap">Create New Map</a>
-</div>
-
-</td><td rowspan = 2 valign=top>
-
-<div class='boxhead'>
-Recent Files
-</div>
-<div id='recent'>
-#recent#
-</div>
-
-</td></tr>
-<tr><td width='30%'>
-
-<div class='boxhead'>
-Links
-</div>
-<div id='sidebox'>
-<a href="http://slade.mancubus.net">SLADE Homepage</a><br/>
-<a href="http://slade.mancubus.net/index.php?page=downloads">SLADE Downloads</a><br/>
-<a href="http://slade.mancubus.net/forum">SLADE Forums</a><br/>
-<a href="http://slade.mancubus.net/wiki">SLADE Wiki</a>
-</div>
-
-</td></tr>
-<tr><td colspan=2>
-
-<div class='boxhead'>
-Tip Of The Day <span style="float: right;"><a href="action://reloadstartpage">+</a></span>
-</div>
-<div class='box'>
-#totd#
-</div>
-
-</td></tr>
-</table>
--->
-
-</div>
-</center>
-
-</center>
+  <div id="content">
+    <div id="back" class="recentbox">
+      <div id="title">Recent Files</div>
+      #recent#
+    </div>
+  </div>
 </body>
-</html>
 
+</html>

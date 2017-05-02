@@ -1,0 +1,579 @@
+
+/* ----------- General ----------- */
+body, table, td, th, div, a {
+	font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Ubuntu', sans-serif;
+	font-size: 1.0em;
+	margin: 0px;
+
+	/* Colours */
+	/*background-color: #e0eaff;*/
+	color: #000000;
+}
+
+html, body {
+   margin: 0;
+   padding: 0;
+   height: 100%;
+   /*background-image: url('images/grid.png');
+   background-repeat: repeat;*/
+   background-color: hsl(220, 100%, 94%);
+}
+
+table, td, th {
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+
+table.body-content {
+  width: 51em;
+  margin-bottom: 20px;
+  background: inherit;
+}
+
+img {
+	max-width: 762px;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+/* ------------ Links ------------ */
+A, A:link, A:visited, A:hover, A:active {
+	font-weight: 600;
+	text-decoration: none;
+	font-size: inherit;
+	background-color: inherit;
+}
+
+A:link, A:visited {
+	color: hsl(220, 100%, 40%);
+	background-color: inherit;
+	transition: all .1s ease-in;
+}
+
+A:hover, A:active {
+	color: hsl(40, 100%, 55%);
+	background-color: inherit;
+	transition: all .08s ease-out;
+}
+
+
+/* ------------ Boxes ------------ */
+#title, .back, #back, div.news_title, div.news_byline, div.news_comments, div.news_postbody {
+	/*border: 1px;
+	border-bottom: 4px;
+	border-top: 0px;*/
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	/*border-style: solid;*/
+	margin-bottom: 30px;
+	line-height: 1.5em;
+	border-radius: 3px;
+
+	/* Colours */
+	background-color: hsl(220, 100%, 99%);
+	border-color: hsl(220, 36%, 76%);
+}
+.back, #back, div.wikifooter {
+	padding: 16px;
+	box-shadow: 0px 0px 20px hsl(220, 35%, 71%);
+}
+
+/* Box Title */
+#title, div.news_title, #date {
+	font-weight: bold;
+	font-size: 1.2em;
+	border-width: 1px;
+	border-bottom-width: 1px;
+	margin-bottom: 16px;
+	padding-top: 7px;
+	padding-bottom: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	position: relative;
+	margin-left: -16px;
+	margin-right: -16px;
+	margin-top: -16px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+
+	/* Colours */
+	background-color: hsl(220, 27%, 57%);
+	color: hsl(220, 100%, 97%);
+	border-color: hsl(220, 24%, 51%);
+}
+
+/* News page box title */
+div.news_title {
+  margin-bottom: 0;
+}
+#date, div.news_byline {
+	border-top: 0px;
+	border-bottom: 0px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	font-size: 0.75em;
+	font-weight: 600;
+	text-align: right;
+	right: 25px;
+	padding-right: 16px;
+}
+#title {
+	position: relative;
+}
+#date {
+	position: absolute;
+	top: 8px;
+	right: 0px;
+	margin-right: 0;
+	margin-top: 0;
+}
+
+/* News page box content */
+div.news_postbody {
+	border: 0;
+	padding: 0;
+	padding-top: 16px;
+}
+div.news_byline {
+	height: 0px;
+}
+div.news_comments {
+	border-top: 0px;
+	padding: 0;
+	margin: 0;
+	text-align: right;
+	font-size: 0.7em;
+	position: relative;
+	border: 0;
+	height: 0;
+	top: -1.5em;
+}
+span.news_authorname {
+	visibility: hidden;
+}
+span.news_time {
+	position: relative;
+	top: -30px;
+	right: -16px;
+
+	color: hsl(220, 100%, 97%);
+}
+
+/* Code box */
+div.codeheader {
+	display: none;
+}
+.bbc_code, #code, div.code {
+     background: none repeat scroll 0 0 hsl(220, 33%, 95%);
+     border: 1px solid hsl(220, 12%, 88%);
+     display: block;
+     font-family: 'Cousine';
+     font-size: 0.75em;
+     line-height: 1.5em;
+     max-height: 24em;
+     overflow: auto;
+     padding: 3px 1em;
+     width: 740px;
+     margin: 0px;
+     margin-top: 0px;
+}
+
+/* Menu item boxes */
+a.menu2, a.menu-hover2, a.menul, a.menul-hover, a.menur, a.menur-hover,
+a.menu-current, a.menul-current, a.menur-current {
+	border-left: 0px;
+	border-bottom: 5px;
+	border-top: 0px;
+	border-right: 0px;
+	padding-left: 1.4em;
+	padding-right: 1.4em;
+	padding-top: 4px;
+	padding-bottom: 6px;
+	border-style: solid;
+	vertical-align: middle;
+	margin: 0px;
+	margin-top: -8px;
+	text-align: center;
+	font-size: 1.1em;
+	font-weight: bold;
+	display: inline-block;
+	/*margin-bottom: 32px;*/
+	/*margin-top: 0px;*/
+
+	/* Colours */
+	background-color: hsl(220, 27%, 57%);
+	border-color: hsl(220, 20%, 42%);
+	color: hsl(220, 100%, 97%);
+	transition: background-color .2s, border-color .2s, color .2s, text-shadow .2s ease-in;
+}
+a.menul-hover, a.menur-hover, a.menu-hover2/*, div.menu-current, div.menul-current, div.menur-current*/ {
+	border-bottom-width: 5px;
+
+	/* Colours (Hover) */
+	background-color: hsl(220, 27%, 57%);
+	color: #ffffff;
+	border-color: hsl(40, 100%, 63%);
+	text-shadow: hsl(220, 100%, 83%) 0px 0px 6px;
+	transition: background-color .1s, border-color .1s, color .1s, text-shadow .1s ease-out;
+}
+a.menul, a.menul-hover, a.menul-current {
+	border-left-width: 0px;
+	border-bottom-left-radius: 5px;
+	padding-left: 1.5em;
+}
+a.menur, a.menur-hover, a.menur-current {
+	border-right-width: 0px;
+	border-bottom-right-radius: 5px;
+	padding-right: 1.5em;
+}
+a.menur-current, a.menul-current, a.menu-current {
+  background: linear-gradient(to bottom, hsl(220, 27%, 57%), hsl(220, 19%, 46%));
+  border-bottom-width: 4px;
+  margin-bottom: 1px;
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
+
+/* --------- Page Header --------- */
+div.header {
+	width: 100%;
+	height: 64px;
+
+	background: linear-gradient(to bottom, hsl(220, 31%, 61%), hsl(220, 27%, 57%));
+}
+div.headershadow {
+	width: 100%;
+	height: 8px;
+	bottom: 0;
+	margin: 0;
+	z-index: -1;
+
+	background: linear-gradient(to bottom, hsl(220, 20%, 42%), hsl(220, 100%, 94%));
+}
+table.hidden {
+	height: 64px;
+}
+td.title1 {
+	/* SLADE */
+	font-family: 'Squada One';
+	font-weight: bolder;
+	font-size: 70px;
+	line-height: 58px;
+	vertical-align: bottom;
+	text-align: left;
+	cursor: default;
+}
+td.title2 {
+	/* 3 */
+	background-size: 64px;
+	background-repeat: no-repeat;
+	width: 40%;
+	font-family: 'Squada One';
+	font-weight: bolder;
+	font-size: 40px;
+	line-height: 38px;
+	vertical-align: bottom;
+	text-align: left;
+	padding-left: 2px;
+	cursor: default;
+}
+td.title3 {
+	/* It's a Doom Editor */
+	width: 400px;
+	font-family: 'Gloria Hallelujah';
+	font-weight: bold;
+	font-size: 24px;
+	line-height: 32px;
+	vertical-align: bottom;
+	text-align: right;
+	cursor: default;
+}
+table.hidden, td.title1, td.title2, td.title3 {
+	background: linear-gradient(to bottom, hsla(220, 31%, 61%, 1), hsl(220, 27%, 57%));
+	color: hsla(220, 19%, 30%, 1);
+}
+
+/* Page Title */
+div#pagetitle {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 16px;
+	margin-top: 32px;
+	text-align: center;
+	font-size: 1.75em;
+	line-height: 1.25em;
+	font-weight: 900;
+	border-style: solid;
+	border-width: 1px;
+	border-bottom-width: 4px;
+	padding-bottom: 0.08em;
+
+	/* Colours */
+	background-color: hsl(220, 27%, 57%);
+	color: hsl(220, 100%, 97%);
+	border-color: hsl(220, 36%, 76%);
+}
+
+
+/* --------- Inner Tables --------- */
+table.inner, table.wiki {
+	margin: 0px;
+	padding: 0px;
+	border-spacing: 0px;
+	border-top-width: 0px;
+	border-left-width: 0px;
+	border-style: solid;
+
+	/* Colours */
+	background-color: hsl(220, 100%, 99%);
+	border-color: hsl(220, 12%, 88%);
+}
+td.inner, th.inner, th.innertop, table.wiki th, table.wiki td, th.innertopright {
+	margin: 0px;
+	padding: 4px;
+	text-align: left;
+	border-bottom-width: 0px;
+	border-right-width: 0px;
+	border-style: solid;
+	vertical-align: top;
+
+	/* Colours */
+	background-color: hsl(220, 100%, 99%);
+	border-color: hsl(220, 12%, 88%);
+}
+th.inner, table.wiki th {
+	border-bottom-width: 2px;
+
+	/* Colours */
+	background-color: hsl(220, 78%, 96%);
+	color: hsl(220, 27%, 57%);
+	border-color: hsl(220, 35%, 90%);
+}
+table.wiki {
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	margin-bottom: 16px;
+	table-layout: fixed;
+	width: 100%
+}
+table.wiki td, table.wiki th {
+	padding-left: 8px;
+	padding-right: 8px;
+	border-right-width: 0px;
+}
+th.innertop, th.innertopright {
+	background-color: hsl(220, 57%, 91%);
+	color: hsl(220, 24%, 51%);
+}
+th.innertopright {
+	text-align: right;
+}
+table.wiki tr:nth-child(even) td {
+	background-color: hsl(220, 100%, 98%) !important;
+}
+
+
+/* ------------- Wiki ------------- */
+div.wiki#back {
+	padding-top: 1px;
+	padding-bottom: 1px;
+	overflow: hidden;
+	text-align: left;
+}
+
+div.wiki#title {
+  margin-top: -1px;
+}
+
+div.wiki strong {
+	font-weight: 600;
+}
+
+div.wiki hr {
+	color: hsl(220, 35%, 90%);
+	border-color: hsl(220, 35%, 90%);
+	border-bottom: 0;
+	border-left: 0;
+	border-right: 0;
+	border-top: solid 1px;
+}
+
+code {
+	font-family: 'Cousine';
+	font-size: 0.75em;
+	line-height: 1.5em;
+	border: 1px solid;
+	padding: 2px;
+	padding-bottom: 0px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+
+	border-color: hsl(220, 35%, 90%);
+	background-color: hsl(220, 78%, 96%);
+}
+
+table.wiki td code {
+	line-height: 1.8em;
+}
+
+h1, h2, h3, h4, h5 {
+	color: hsl(220, 28%, 43%);
+}
+
+h4 {
+	font-size: 1.1em;
+	margin-bottom: 0px;
+	font-weight: 600;
+}
+
+h5 {
+	font-size: 1.02em;
+	margin-bottom: 0px;
+	font-weight: 600;
+}
+
+h3, h2, h1 {
+	font-size: 1.2em;
+	padding-bottom: 4px;
+	margin-bottom: 8px;
+}
+
+h2, h1 {
+	margin-top: 24px;
+	border-style: solid;
+	border-width: 0px;
+	border-bottom-width: 1px;
+	
+	border-color: hsl(220, 35%, 90%);
+}
+
+pre code {
+	background: none repeat scroll 0 0 hsl(220, 33%, 95%);
+	border: 1px solid hsl(220, 12%, 88%);
+	display: block;
+	font-family: 'Cousine';
+	font-size: 9pt;
+	line-height: 1.5em;
+	max-height: 24em;
+	overflow: auto;
+	padding: 3px 1em;
+	padding-top: 5px;
+	width: 730px;
+	margin: auto;
+	margin-top: 0px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+
+ul {
+	margin-top: 8px;
+}
+
+ul ul {
+  margin-top: 0px;
+}
+
+div.wikifooter {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 20px;
+	margin-top: 20px;
+	text-align: center;
+	line-height: 36px;
+	/*border-style: solid;
+	border-width: 1px;
+	border-bottom-width: 4px;*/
+	/*width: 100%;*/
+	padding: 0;
+	border-radius: 0.15em;
+
+	/* Colours */
+	background-color: hsl(220, 27%, 57%);
+	color: hsl(220, 36%, 76%);
+	border-color: hsl(220, 24%, 51%);
+}
+
+div.wikifooter a {
+	margin-left: 16px;
+	margin-right: 16px;
+	color: #FFF;
+}
+
+div.footer-pad {
+  height: 100%;
+}
+
+div.wikifooter a:hover {
+  color: hsl(40, 100%, 55%);
+}
+
+div#topbuffer {
+	margin-top: 32px;
+}
+
+blockquote {
+	border-style: solid;
+	border-width: 0px;
+	border-left-width: 6px;
+	display: block;
+	line-height: 1.5em;
+	width: 720px;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin: auto;
+	padding-bottom: 0px;
+	padding-top: 0px;
+	font-size: 0.95em;
+	text-align: justify;
+	/*border-style: solid;
+	border-width: 0px;
+	border-left-width: 4px;
+	padding-left: 16px;
+	border-color: #ADBFD8;
+	width: 730px;
+	margin: 0px;
+	margin-left: 4px;
+	font-style: italic;*/
+	
+	color: hsl(220, 18%, 52%);
+	/*background-color: #EFF2FD;*/
+	/*background: linear-gradient(to right, #EFF2FD, #FCFEFF);*/
+	border-color: hsl(220, 36%, 76%);
+}
+
+img.inline {
+	margin: 0px;
+}
+
+hidewebsite {
+	display: none;
+}
+
+/* --------- WebKit Stuff --------- */
+::-webkit-scrollbar, ::-webkit-scrollbar:horizontal {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: hsl(220, 33%, 95%);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(220, 26%, 72%);
+  border: solid 1px;
+  border-color: hsl(220, 33%, 95%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(220, 27%, 57%);
+}

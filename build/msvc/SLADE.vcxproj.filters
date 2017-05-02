@@ -1452,6 +1452,9 @@
     <ClCompile Include="..\..\src\MapEditor\Edit\MoveObjects.cpp">
       <Filter>Map Editor\Edit</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\MainEditor\UI\StartPage.cpp">
+      <Filter>Main Editor\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -2512,6 +2515,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\MapEditor\Edit\MoveObjects.h">
       <Filter>Map Editor\Edit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MainEditor\UI\StartPage.h">
+      <Filter>Main Editor\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
