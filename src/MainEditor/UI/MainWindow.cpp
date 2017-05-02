@@ -316,7 +316,7 @@ void MainWindow::setupLayout()
 
 	// Tools menu
 	wxMenu* toolsMenu = new wxMenu("");
-	theApp->getAction("main_runscript")->addToMenu(toolsMenu);
+	SAction::fromId("main_runscript")->addToMenu(toolsMenu);
 	menu->Append(toolsMenu, "&Tools");
 
 	// Help menu

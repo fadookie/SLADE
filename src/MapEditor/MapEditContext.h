@@ -142,6 +142,10 @@ public:
 	// SAction handler
 	bool	handleAction(string id) override;
 
+	// For scripting
+	unsigned	s_EditMode() { return (unsigned)edit_mode_; }
+	unsigned	s_SectorEditMode() { return (unsigned)sector_mode_; }
+
 private:
 	SLADEMap			map_;
 	MapCanvas*			canvas_				= nullptr;

@@ -235,7 +235,7 @@ void MapEditorWindow::setupMenu()
 
 	// Tools menu
 	wxMenu* menu_tools = new wxMenu("");
-	theApp->getAction("mapw_runscript")->addToMenu(menu_tools);
+	SAction::fromId("mapw_runscript")->addToMenu(menu_tools);
 	menu->Append(menu_tools, "&Tools");
 
 	SetMenuBar(menu);

@@ -22,7 +22,10 @@ namespace MainEditor
 
 	void	openTextureEditor(Archive* archive, ArchiveEntry* entry = nullptr);
 	void	openMapEditor(Archive* archive);
+	void	openArchiveTab(Archive* archive);
 	void	openEntry(ArchiveEntry* entry);
+
+	bool	showEntry(ArchiveEntry* entry);
 
 	void	setGlobalPaletteFromArchive(Archive* archive);
 

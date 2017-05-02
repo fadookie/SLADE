@@ -34,12 +34,14 @@
 #include "Archive/Formats/All.h"
 #include "External/duktape/dukglue/dukglue.h"
 #include "General/Console/Console.h"
-#include "MainEditor/MainWindow.h"
-#include "MapEditor/MapEditorWindow.h"
 #include "UI/TextEditor/TextEditor.h"
 #include "Utility/SFileDialog.h"
 #include "MapEditor/SLADEMap/SLADEMap.h"
 #include "Dialogs/SScriptDialog.h"
+#include "MainEditor/MainEditor.h"
+#include "MapEditor/Edit/Edit3D.h"
+#include "MapEditor/MapEditContext.h"
+#include "MapEditor/GameConfiguration/ThingType.h"
 
 
 /*******************************************************************
@@ -68,7 +70,7 @@ struct ScriptInterface
 	// Log a message to the console
 	void logMessage(const char* message)
 	{
-		LOG_MESSAGE(1, message);
+		Log::message(Log::MessageType::Script, message);
 	}
 
 	// Get the global error message
@@ -133,19 +135,19 @@ struct ScriptInterface
 	// Returns the current archive open in the UI
 	Archive* currentArchive()
 	{
-		return theMainWindow->getCurrentArchive();
+		return MainEditor::currentArchive();
 	}
 
 	// Returns the current entry open in the UI
 	ArchiveEntry* currentEntry()
 	{
-		return theMainWindow->getCurrentEntry();
+		return MainEditor::currentEntry();
 	}
 
 	// Returns the currently selected entries in the current archive
 	vector<ArchiveEntry*> currentEntrySelection()
 	{
-		return theMainWindow->getCurrentEntrySelection();
+		return MainEditor::currentEntrySelection();
 	}
 
 	// Switch to the tab for [archive], opening it if necessary
@@ -154,25 +156,25 @@ struct ScriptInterface
 		if (!archive)
 			return false;
 
-		theMainWindow->getArchiveManagerPanel()->openTab(archive);
+		MainEditor::openArchiveTab(archive);
 		return true;
 	}
 
 	// Show [entry]
 	bool showEntry(ArchiveEntry* entry)
 	{
-		return theMainWindow->getArchiveManagerPanel()->showEntry(entry);
+		return MainEditor::showEntry(entry);
 	}
-
+	
 	// Returns the map editor
-	MapEditor* mapEditor()
+	MapEditContext* mapEditor()
 	{
-		return &(theMapEditor->mapEditor());
+		return &(MapEditor::editContext());
 	}
 
 	SLADEMap* currentMap()
 	{
-		return theMapEditor->mapEditor().s_GetMap();
+		return &(MapEditor::editContext().map());
 	}
 
 
@@ -326,16 +328,22 @@ namespace Scripting
 		dukglue_register_method(context, &SLADEMap::nThings,	"numThings");
 	}
 
+	void registerItemSelection()
+	{
+		dukglue_register_method(context, &ItemSelection::selectedVertices,	"selectedVertices");
+		dukglue_register_method(context, &ItemSelection::selectedLines,		"selectedLines");
+		dukglue_register_method(context, &ItemSelection::selectedSectors,	"selectedSectors");
+		dukglue_register_method(context, &ItemSelection::selectedThings,	"selectedThings");
+	}
+
 	void registerMapEditor()
 	{
-		dukglue_register_property(context, &MapEditor::editMode, nullptr,		"editMode");
-		dukglue_register_property(context, &MapEditor::sectorEditMode, nullptr,	"sectorEditMode");
-		dukglue_register_property(context, &MapEditor::gridSize, nullptr,		"gridSize");
+		registerItemSelection();
 
-		dukglue_register_method(context, &MapEditor::s_SelectedVertices,	"getSelectedVertices");
-		dukglue_register_method(context, &MapEditor::s_SelectedLines,		"getSelectedLines");
-		dukglue_register_method(context, &MapEditor::s_SelectedSectors,		"getSelectedSectors");
-		dukglue_register_method(context, &MapEditor::s_SelectedThings,		"getSelectedThings");
+		dukglue_register_property(context, &MapEditContext::s_EditMode, nullptr,		"editMode");
+		dukglue_register_property(context, &MapEditContext::s_SectorEditMode, nullptr,	"sectorEditMode");
+		dukglue_register_property(context, &MapEditContext::gridSize, nullptr,			"gridSize");
+		dukglue_register_property(context, &MapEditContext::selection, nullptr,			"selection");
 	}
 
 	void registerMapVertex()
@@ -354,7 +362,7 @@ namespace Scripting
 		dukglue_register_property(context, &MapLine::y1, nullptr,			"y1");
 		dukglue_register_property(context, &MapLine::x2, nullptr,			"x2");
 		dukglue_register_property(context, &MapLine::y2, nullptr,			"y2");
-		dukglue_register_property(context, &MapLine::v1, nullptr,			 "vertex1");
+		dukglue_register_property(context, &MapLine::v1, nullptr,			"vertex1");
 		dukglue_register_property(context, &MapLine::v2, nullptr,			"vertex2");
 		dukglue_register_property(context, &MapLine::s1, nullptr,			"side1");
 		dukglue_register_property(context, &MapLine::s2, nullptr,			"side2");
@@ -579,7 +587,7 @@ void Scripting::openScriptTestDialog(wxWindow* parent)
 CONSOLE_COMMAND(exec_script, 1, false)
 {
 	if (!Scripting::runScript(args[0]))
-		theConsole->logMessage(Scripting::getError());
+		Log::message(Log::MessageType::Script, Scripting::getError());
 }
 
 CONSOLE_COMMAND(exec_script_file, 1, false)
@@ -589,7 +597,7 @@ CONSOLE_COMMAND(exec_script_file, 1, false)
 	if (file.Open(args[0]) && file.ReadAll(&script))
 	{
 		if (!Scripting::runScript(script))
-			theConsole->logMessage(Scripting::getError());
+			Log::message(Log::MessageType::Script, Scripting::getError());
 	}
 }
 
@@ -610,10 +618,13 @@ CONSOLE_COMMAND(exec_script_res, 1, false)
 		);
 
 		if (!Scripting::runScript(script))
-			theConsole->logMessage(S_FMT("Error initialising scripting environment: %s", Scripting::error));
+			Log::message(
+				Log::MessageType::Script,
+				S_FMT("Error initialising scripting environment: %s", Scripting::error)
+			);
 	}
 	else
-		theConsole->logMessage(S_FMT("Resource script \"scripts/%s\" not found", args[0]));
+		Log::message(Log::MessageType::Script, S_FMT("Resource script \"scripts/%s\" not found", args[0]));
 }
 
 CONSOLE_COMMAND(script_reset, 0, true)

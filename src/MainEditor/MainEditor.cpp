@@ -72,12 +72,22 @@ void MainEditor::openMapEditor(Archive* archive)
 	MapEditor::chooseMap(archive);
 }
 
+void MainEditor::openArchiveTab(Archive* archive)
+{
+	main_window->getArchiveManagerPanel()->openTab(archive);
+}
+
 /* MainWindow::openEntry
  * Opens [entry] in its own tab
  *******************************************************************/
 void MainEditor::openEntry(ArchiveEntry* entry)
 {
 	main_window->getArchiveManagerPanel()->openEntryTab(entry);
+}
+
+bool MainEditor::showEntry(ArchiveEntry* entry)
+{
+	return main_window->getArchiveManagerPanel()->showEntry(entry);
 }
 
 void MainEditor::setGlobalPaletteFromArchive(Archive * archive)

@@ -31,7 +31,7 @@ namespace MapEditor
 		Any
 	};
 
-	enum class Mode
+	enum class Mode : unsigned int
 	{
 		Vertices,
 		Lines,
@@ -40,7 +40,7 @@ namespace MapEditor
 		Visual
 	};
 
-	enum class SectorMode
+	enum class SectorMode : unsigned int
 	{
 		Both,
 		Floor,
