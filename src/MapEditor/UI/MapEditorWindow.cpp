@@ -474,7 +474,7 @@ void MapEditorWindow::lockMapEntries(bool lock)
  *******************************************************************/
 bool MapEditorWindow::chooseMap(Archive* archive)
 {
-	MapEditorConfigDialog dlg(MainEditor::windowWx(), archive, (bool)archive, !(bool)archive);
+	MapEditorConfigDialog dlg(MainEditor::windowWx(), archive, archive != nullptr, archive == nullptr);
 
 	if (dlg.ShowModal() == wxID_OK)
 	{

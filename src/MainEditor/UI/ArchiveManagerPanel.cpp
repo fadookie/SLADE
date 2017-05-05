@@ -1954,6 +1954,8 @@ bool ArchiveManagerPanel::showEntry(ArchiveEntry* entry)
 	((ArchivePanel*)tab)->openEntry(entry, true);
 	if (entry->getType() != EntryType::folderType())
 		((ArchivePanel*)tab)->focusOnEntry(entry);
+
+	return true;
 }
 
 
