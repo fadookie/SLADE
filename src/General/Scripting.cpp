@@ -32,7 +32,6 @@
 #include "Scripting.h"
 #include "Archive/ArchiveManager.h"
 #include "Archive/Formats/All.h"
-#include "External/duktape/dukglue/dukglue.h"
 #include "General/Console/Console.h"
 #include "UI/TextEditor/TextEditor.h"
 #include "Utility/SFileDialog.h"
@@ -42,6 +41,8 @@
 #include "MapEditor/Edit/Edit3D.h"
 #include "MapEditor/MapEditContext.h"
 #include "Game/ThingType.h"
+#include "External/duktape/dukglue/dukglue.h"
+#include "Game/Configuration.h"
 
 
 /*******************************************************************
@@ -57,6 +58,31 @@ namespace Scripting
 	// Testing
 	string	prev_script_test;
 }
+
+
+struct ScriptThingType
+{
+	int type;
+
+	explicit ScriptThingType(int type) : type{ type } {}
+
+	const string&	name() const { return Game::configuration().thingType(type).name(); }
+	const string&	group() const { return Game::configuration().thingType(type).group(); }
+	int				radius() const { return Game::configuration().thingType(type).radius(); }
+	int				height() const { return Game::configuration().thingType(type).height(); }
+	float			scaleX() const { return Game::configuration().thingType(type).scaleX(); }
+	float			scaleY() const { return Game::configuration().thingType(type).scaleY(); }
+	bool			angled() const { return Game::configuration().thingType(type).angled(); }
+	bool			hanging() const { return Game::configuration().thingType(type).hanging(); }
+	bool			fullbright() const { return Game::configuration().thingType(type).fullbright(); }
+	bool			decoration() const { return Game::configuration().thingType(type).decoration(); }
+	bool			solid() const { return Game::configuration().thingType(type).solid(); }
+	int				needsTag() const { return (int)Game::configuration().thingType(type).needsTag(); }
+	const string&	sprite() const { return Game::configuration().thingType(type).sprite(); }
+	const string&	icon() const { return Game::configuration().thingType(type).icon(); }
+	const string&	translation() const { return Game::configuration().thingType(type).translation(); }
+	const string&	palette() const { return Game::configuration().thingType(type).palette(); }
+};
 
 
 /*******************************************************************
@@ -177,6 +203,11 @@ struct ScriptInterface
 		return &(MapEditor::editContext().map());
 	}
 
+	ScriptThingType thingType(int type)
+	{
+		return ScriptThingType{ type };
+	}
+
 
 
 	// Raw Duktape functions
@@ -210,6 +241,7 @@ namespace Scripting
 		dukglue_register_method(context, &ScriptInterface::currentEntrySelection,	"getCurrentEntrySelection");
 		dukglue_register_method(context, &ScriptInterface::showArchive,				"showArchive");
 		dukglue_register_method(context, &ScriptInterface::showEntry,				"showEntry");
+		//dukglue_register_method(context, &ScriptInterface::thingType, 				"thingTypeInfo");
 
 		dukglue_register_property(context, &ScriptInterface::archiveManager, nullptr,	"archiveManager");
 		dukglue_register_property(context, &ScriptInterface::globalError, nullptr,		"globalError");
@@ -435,24 +467,22 @@ namespace Scripting
 
 	void registerThingType()
 	{
-		using namespace Game;
-
-		/*dukglue_register_property(context, &ThingType::name, nullptr,		"name");
-		dukglue_register_property(context, &ThingType::group, nullptr,		"group");
-		dukglue_register_property(context, &ThingType::radius, nullptr,		"radius");
-		dukglue_register_property(context, &ThingType::height, nullptr,		"height");
-		dukglue_register_property(context, &ThingType::scaleX, nullptr,		"scaleX");
-		dukglue_register_property(context, &ThingType::scaleY, nullptr,		"scaleY");
-		dukglue_register_property(context, &ThingType::angled, nullptr,		"angled");
-		dukglue_register_property(context, &ThingType::hanging, nullptr,		"hanging");
-		dukglue_register_property(context, &ThingType::fullbright, nullptr,	"fullbright");
-		dukglue_register_property(context, &ThingType::decoration, nullptr,	"decoration");
-		dukglue_register_property(context, &ThingType::solid, nullptr,		"solid");
-		dukglue_register_property(context, &ThingType::needsTag, nullptr,		"tagged");
-		dukglue_register_property(context, &ThingType::sprite, nullptr,		"sprite");
-		dukglue_register_property(context, &ThingType::icon, nullptr,		"icon");
-		dukglue_register_property(context, &ThingType::translation, nullptr,	"translation");
-		dukglue_register_property(context, &ThingType::palette, nullptr,		"palette");*/
+		dukglue_register_property(context, &ScriptThingType::name, nullptr,			"name");
+		dukglue_register_property(context, &ScriptThingType::group, nullptr,		"group");
+		dukglue_register_property(context, &ScriptThingType::radius, nullptr,		"radius");
+		dukglue_register_property(context, &ScriptThingType::height, nullptr,		"height");
+		dukglue_register_property(context, &ScriptThingType::scaleX, nullptr,		"scaleX");
+		dukglue_register_property(context, &ScriptThingType::scaleY, nullptr,		"scaleY");
+		dukglue_register_property(context, &ScriptThingType::angled, nullptr,		"angled");
+		dukglue_register_property(context, &ScriptThingType::hanging, nullptr,		"hanging");
+		dukglue_register_property(context, &ScriptThingType::fullbright, nullptr,	"fullbright");
+		dukglue_register_property(context, &ScriptThingType::decoration, nullptr,	"decoration");
+		dukglue_register_property(context, &ScriptThingType::solid, nullptr,		"solid");
+		dukglue_register_property(context, &ScriptThingType::needsTag, nullptr,		"tagged");
+		dukglue_register_property(context, &ScriptThingType::sprite, nullptr,		"sprite");
+		dukglue_register_property(context, &ScriptThingType::icon, nullptr,			"icon");
+		dukglue_register_property(context, &ScriptThingType::translation, nullptr,	"translation");
+		dukglue_register_property(context, &ScriptThingType::palette, nullptr,		"palette");
 	}
 }
 
