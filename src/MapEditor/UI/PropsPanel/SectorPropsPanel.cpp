@@ -28,18 +28,18 @@
  * INCLUDES
  *******************************************************************/
 #include "Main.h"
-#include "SectorPropsPanel.h"
+#include "Game/Configuration.h"
+#include "MapEditor/MapEditContext.h"
 #include "MapEditor/MapEditor.h"
+#include "MapEditor/MapTextureManager.h"
 #include "MapEditor/SLADEMap/MapObject.h"
 #include "MapEditor/UI/Dialogs/MapTextureBrowser.h"
 #include "MapEditor/UI/Dialogs/SectorSpecialDialog.h"
 #include "MapObjectPropsPanel.h"
 #include "OpenGL/Drawing.h"
+#include "SectorPropsPanel.h"
 #include "UI/NumberTextCtrl.h"
 #include "UI/STabCtrl.h"
-#include "MapEditor/MapTextureManager.h"
-#include "MapEditor/GameConfiguration/GameConfiguration.h"
-#include "MapEditor/MapEditContext.h"
 
 
 /*******************************************************************
@@ -85,7 +85,10 @@ void FlatTexCanvas::setTexture(string tex)
 	if (tex == "-" || tex == "")
 		texture = nullptr;
 	else
-		texture = MapEditor::textureManager().getFlat(tex, theGameConfiguration->mixTexFlats());
+		texture = MapEditor::textureManager().getFlat(
+			tex,
+			Game::configuration().featureSupported(Game::Feature::MixTexFlats)
+		);
 
 	Refresh();
 }
@@ -237,7 +240,7 @@ SectorPropsPanel::SectorPropsPanel(wxWindow* parent) : PropsPanelBase(parent)
 	SetSizer(sizer);
 
 	// Tabs
-	stc_tabs = new STabCtrl(this, false);
+	stc_tabs = STabCtrl::createControl(this);
 	sizer->Add(stc_tabs, 1, wxEXPAND);
 
 	// General tab

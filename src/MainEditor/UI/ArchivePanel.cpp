@@ -31,9 +31,9 @@
  *******************************************************************/
 #include "Main.h"
 #include "App.h"
-#include "ArchivePanel.h"
-#include "ArchiveManagerPanel.h"
 #include "Archive/ArchiveManager.h"
+#include "ArchiveManagerPanel.h"
+#include "ArchivePanel.h"
 #include "Dialogs/GfxConvDialog.h"
 #include "Dialogs/MapEditorConfigDialog.h"
 #include "Dialogs/MapReplaceDialog.h"
@@ -52,6 +52,7 @@
 #include "EntryPanel/PaletteEntryPanel.h"
 #include "EntryPanel/SwitchesEntryPanel.h"
 #include "EntryPanel/TextEntryPanel.h"
+#include "Game/Configuration.h"
 #include "General/Clipboard.h"
 #include "General/Executables.h"
 #include "General/KeyBind.h"
@@ -67,9 +68,8 @@
 #include "MainEditor/UI/MainWindow.h"
 #include "MapEditor/MapEditor.h"
 #include "MapEditor/UI/MapEditorWindow.h"
-#include "Utility/SFileDialog.h"
 #include "UI/PaletteChooser.h"
-#include "MapEditor/GameConfiguration/GameConfiguration.h"
+#include "Utility/SFileDialog.h"
 
 
 /*******************************************************************
@@ -3735,7 +3735,7 @@ void ArchivePanel::onEntryListActivated(wxListEvent& e)
 			else
 			{
 				// Load game configuration
-				theGameConfiguration->openConfig(dlg.selectedGame(), dlg.selectedPort(), info.format);
+				Game::configuration().openConfig(dlg.selectedGame(), dlg.selectedPort(), info.format);
 
 				// Attempt to open map
 				if (MapEditor::window()->openMap(info))

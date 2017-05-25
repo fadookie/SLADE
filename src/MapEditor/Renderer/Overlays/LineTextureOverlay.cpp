@@ -30,17 +30,15 @@
  * INCLUDES
  *******************************************************************/
 #include "Main.h"
-#include "UI/WxStuff.h"
+#include "Game/Configuration.h"
+#include "General/ColourConfiguration.h"
 #include "LineTextureOverlay.h"
+#include "MapEditor/MapEditContext.h"
+#include "MapEditor/MapTextureManager.h"
 #include "MapEditor/SLADEMap/MapLine.h"
 #include "MapEditor/SLADEMap/MapSide.h"
-#include "General/ColourConfiguration.h"
-#include "OpenGL/Drawing.h"
-#include "MapEditor/UI/MapEditorWindow.h"
 #include "MapEditor/UI/Dialogs/MapTextureBrowser.h"
-#include "MapEditor/MapEditContext.h"
-#include "MapEditor/GameConfiguration/GameConfiguration.h"
-#include "MapEditor/MapTextureManager.h"
+#include "OpenGL/Drawing.h"
 
 
 /*******************************************************************
@@ -321,7 +319,10 @@ void LineTextureOverlay::drawTexture(float alpha, int size, tex_inf_t& tex, stri
 	{
 		// Draw first texture
 		OpenGL::setColour(255, 255, 255, 255*alpha, 0);
-		tex_first = MapEditor::textureManager().getTexture(tex.textures[0], theGameConfiguration->mixTexFlats());
+		tex_first = MapEditor::textureManager().getTexture(
+			tex.textures[0],
+			Game::configuration().featureSupported(Game::Feature::MixTexFlats)
+		);
 		Drawing::drawTextureWithin(tex_first, tex.position.x - halfsize, tex.position.y - halfsize,
 		                           tex.position.x + halfsize, tex.position.y + halfsize, 0, 2);
 
@@ -329,9 +330,20 @@ void LineTextureOverlay::drawTexture(float alpha, int size, tex_inf_t& tex, stri
 		OpenGL::setColour(255, 255, 255, 127*alpha, 0);
 		for (unsigned a = 1; a < tex.textures.size() && a < 5; a++)
 		{
-			Drawing::drawTextureWithin(MapEditor::textureManager().getTexture(tex.textures[a], theGameConfiguration->mixTexFlats()),
-			                           tex.position.x - halfsize, tex.position.y - halfsize,
-			                           tex.position.x + halfsize, tex.position.y + halfsize, 0, 2);
+			auto gl_tex = MapEditor::textureManager().getTexture(
+				tex.textures[a],
+				Game::configuration().featureSupported(Game::Feature::MixTexFlats)
+			);
+
+			Drawing::drawTextureWithin(
+				gl_tex,
+				tex.position.x - halfsize,
+				tex.position.y - halfsize,
+				tex.position.x + halfsize,
+				tex.position.y + halfsize,
+				0,
+				2
+			);
 		}
 	}
 
@@ -462,7 +474,7 @@ void LineTextureOverlay::browseTexture(tex_inf_t& tex, string position)
 		texture = "-";
 
 	// Open texture browser
-	MapTextureBrowser browser(MapEditor::window(), 0, texture, &(MapEditor::editContext().map()));
+	MapTextureBrowser browser(MapEditor::windowWx(), 0, texture, &(MapEditor::editContext().map()));
 	browser.SetTitle(S_FMT("Browse %s Texture", position));
 	if (browser.ShowModal() == wxID_OK)
 	{

@@ -41,7 +41,7 @@
 #include "MainEditor/MainEditor.h"
 #include "MapEditor/Edit/Edit3D.h"
 #include "MapEditor/MapEditContext.h"
-#include "MapEditor/GameConfiguration/ThingType.h"
+#include "Game/ThingType.h"
 
 
 /*******************************************************************
@@ -407,7 +407,8 @@ namespace Scripting
 		dukglue_register_property(context, &MapThing::yPos, nullptr,		"y");
 		dukglue_register_property(context, &MapThing::getType, nullptr,		"type");
 		dukglue_register_property(context, &MapThing::getAngle, nullptr,	"angle");
-		dukglue_register_property(context, &MapThing::s_TypeInfo, nullptr,	"typeInfo");
+		
+		//dukglue_register_method(context, &MapThing::s_TypeInfo,	"typeInfo");
 	}
 
 	void registerMapObject()
@@ -434,22 +435,24 @@ namespace Scripting
 
 	void registerThingType()
 	{
-		dukglue_register_property(context, &ThingType::getName, nullptr,		"name");
-		dukglue_register_property(context, &ThingType::getGroup, nullptr,		"group");
-		dukglue_register_property(context, &ThingType::getRadius, nullptr,		"radius");
-		dukglue_register_property(context, &ThingType::getHeight, nullptr,		"height");
-		dukglue_register_property(context, &ThingType::getScaleX, nullptr,		"scaleX");
-		dukglue_register_property(context, &ThingType::getScaleY, nullptr,		"scaleY");
-		dukglue_register_property(context, &ThingType::isAngled, nullptr,		"angled");
-		dukglue_register_property(context, &ThingType::isHanging, nullptr,		"hanging");
-		dukglue_register_property(context, &ThingType::isFullbright, nullptr,	"fullbright");
-		dukglue_register_property(context, &ThingType::isDecoration, nullptr,	"decoration");
-		dukglue_register_property(context, &ThingType::isSolid, nullptr,		"solid");
+		using namespace Game;
+
+		/*dukglue_register_property(context, &ThingType::name, nullptr,		"name");
+		dukglue_register_property(context, &ThingType::group, nullptr,		"group");
+		dukglue_register_property(context, &ThingType::radius, nullptr,		"radius");
+		dukglue_register_property(context, &ThingType::height, nullptr,		"height");
+		dukglue_register_property(context, &ThingType::scaleX, nullptr,		"scaleX");
+		dukglue_register_property(context, &ThingType::scaleY, nullptr,		"scaleY");
+		dukglue_register_property(context, &ThingType::angled, nullptr,		"angled");
+		dukglue_register_property(context, &ThingType::hanging, nullptr,		"hanging");
+		dukglue_register_property(context, &ThingType::fullbright, nullptr,	"fullbright");
+		dukglue_register_property(context, &ThingType::decoration, nullptr,	"decoration");
+		dukglue_register_property(context, &ThingType::solid, nullptr,		"solid");
 		dukglue_register_property(context, &ThingType::needsTag, nullptr,		"tagged");
-		dukglue_register_property(context, &ThingType::getSprite, nullptr,		"sprite");
-		dukglue_register_property(context, &ThingType::getIcon, nullptr,		"icon");
-		dukglue_register_property(context, &ThingType::getTranslation, nullptr,	"translation");
-		dukglue_register_property(context, &ThingType::getPalette, nullptr,		"palette");
+		dukglue_register_property(context, &ThingType::sprite, nullptr,		"sprite");
+		dukglue_register_property(context, &ThingType::icon, nullptr,		"icon");
+		dukglue_register_property(context, &ThingType::translation, nullptr,	"translation");
+		dukglue_register_property(context, &ThingType::palette, nullptr,		"palette");*/
 	}
 }
 

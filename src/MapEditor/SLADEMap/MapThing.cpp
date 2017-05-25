@@ -29,8 +29,7 @@
  *******************************************************************/
 #include "Main.h"
 #include "MapThing.h"
-#include "App.h"
-#include "MapEditor/GameConfiguration/GameConfiguration.h"
+#include "Game/Configuration.h"
 
 
 /*******************************************************************
@@ -241,7 +240,7 @@ void MapThing::readBackup(mobj_backup_t* backup)
 /* MapThing::s_TypeInfo
  * Returns the type info (ThingType) for this thing
  *******************************************************************/
-ThingType* MapThing::s_TypeInfo()
+Game::ThingType MapThing::s_TypeInfo() const
 {
-	return theGameConfiguration->thingType(type);
+	return Game::configuration().thingType(type);
 }

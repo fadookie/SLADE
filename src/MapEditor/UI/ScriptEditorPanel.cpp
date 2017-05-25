@@ -28,13 +28,13 @@
  * INCLUDES
  *******************************************************************/
 #include "Main.h"
-#include "ScriptEditorPanel.h"
 #include "Archive/Archive.h"
+#include "Game/Configuration.h"
 #include "MainEditor/EntryOperations.h"
-#include "MapEditor/GameConfiguration/GameConfiguration.h"
-#include "MapEditor/MapEditor.h"
-#include "UI/SToolBar/SToolBar.h"
 #include "MapEditor/MapEditContext.h"
+#include "MapEditor/MapEditor.h"
+#include "ScriptEditorPanel.h"
+#include "UI/SToolBar/SToolBar.h"
 
 
 /*******************************************************************
@@ -95,7 +95,7 @@ ScriptEditorPanel::ScriptEditorPanel(wxWindow* parent)
 	vbox->Add(text_editor, 1, wxEXPAND|wxALL, 4);
 
 	// Set language
-	string lang = theGameConfiguration->scriptLanguage();
+	string lang = Game::configuration().scriptLanguage();
 	if (S_CMPNOCASE(lang, "acs_hexen"))
 	{
 		text_editor->setLanguage(TextLanguage::getLanguage("acs"));
@@ -150,10 +150,10 @@ bool ScriptEditorPanel::openScripts(ArchiveEntry* script, ArchiveEntry* compiled
 	if (compiled) entry_compiled->importEntry(compiled);
 
 	// Process ACS open scripts
-	string lang = theGameConfiguration->scriptLanguage();
+	string lang = Game::configuration().scriptLanguage();
 	if (entry_script->getSize() > 0 && (lang == "acs_hexen" || lang == "acs_zdoom"))
 	{
-		auto map = MapEditor::editContext().map();
+		auto& map = MapEditor::editContext().map();
 		map.mapSpecials()->processACSScripts(entry_script);
 		map.mapSpecials()->updateTaggedSectors(&map);
 	}
@@ -214,7 +214,7 @@ void ScriptEditorPanel::saveScripts()
 	entry_script->importMem(buf, buf.length());
 
 	// Process ACS open scripts
-	string lang = theGameConfiguration->scriptLanguage();
+	string lang = Game::configuration().scriptLanguage();
 	if (entry_script->getSize() > 0 && (lang == "acs_hexen" || lang == "acs_zdoom"))
 	{
 		SLADEMap* map = &(MapEditor::editContext().map());
@@ -244,7 +244,7 @@ bool ScriptEditorPanel::handleAction(string name)
 		saveScripts();
 
 		// Compile depending on language
-		string lang = theGameConfiguration->scriptLanguage();
+		string lang = Game::configuration().scriptLanguage();
 		if (lang == "acs_hexen")
 			EntryOperations::compileACS(entry_script, true, entry_compiled, (wxFrame*)MapEditor::windowWx());
 		else if (lang == "acs_zdoom")

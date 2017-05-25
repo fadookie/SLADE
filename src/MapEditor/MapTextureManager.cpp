@@ -29,19 +29,19 @@
  * INCLUDES
  *******************************************************************/
 #include "Main.h"
-#include "MapTextureManager.h"
+#include "Archive/ArchiveManager.h"
+#include "Game/Configuration.h"
+#include "General/Misc.h"
 #include "General/ResourceManager.h"
 #include "Graphics/CTexture/CTexture.h"
+#include "Graphics/SImage/SImage.h"
 #include "MainEditor/MainEditor.h"
 #include "MainEditor/UI/MainWindow.h"
-#include "Archive/ArchiveManager.h"
-#include "MapEditor.h"
 #include "MapEditContext.h"
+#include "MapEditor.h"
+#include "MapTextureManager.h"
 #include "OpenGL/OpenGL.h"
-#include "Graphics/SImage/SImage.h"
-#include "General/Misc.h"
 #include "UI/PaletteChooser.h"
-#include "GameConfiguration/GameConfiguration.h"
 
 
 /*******************************************************************
@@ -187,7 +187,7 @@ GLTexture* MapTextureManager::getTexture(string name, bool mixed)
 	{
 		textypefound = TEXTYPE_WALLTEXTURE;
 		SImage image;
-		if (ctex->toImage(image, archive, palette))
+		if (ctex->toImage(image, archive, palette, true))
 		{
 			mtex.texture = new GLTexture(false);
 			mtex.texture->setFilter(filter);
@@ -349,7 +349,7 @@ GLTexture* MapTextureManager::getSprite(string name, string translation, string 
 	else  	// Try composite textures then
 	{
 		CTexture* ctex = theResourceManager->getTexture(name, archive);
-		if (ctex && ctex->toImage(image, archive, this->palette))
+		if (ctex && ctex->toImage(image, archive, this->palette, true))
 			found = true;
 	}
 
@@ -358,7 +358,7 @@ GLTexture* MapTextureManager::getSprite(string name, string translation, string 
 	{
 		Palette8bit* pal = this->palette;
 		// Apply translation
-		if (!translation.IsEmpty()) image.applyTranslation(translation, pal);
+		if (!translation.IsEmpty()) image.applyTranslation(translation, pal, true);
 		// Apply palette override
 		if (!palette.IsEmpty())
 		{
@@ -544,7 +544,7 @@ void MapTextureManager::buildTexInfoList()
 	}
 
 	// Texture namespace patches (TX_)
-	if (theGameConfiguration->txTextures())
+	if (Game::configuration().featureSupported(Game::Feature::TxTextures))
 	{
 		vector<ArchiveEntry*> patches;
 		theResourceManager->getAllPatchEntries(patches, NULL);

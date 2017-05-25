@@ -29,11 +29,11 @@
  * INCLUDES
  *******************************************************************/
 #include "Main.h"
-#include "Application/App.h"
+#include "App.h"
+#include "Game/Configuration.h"
 #include "General/Clipboard.h"
 #include "General/ColourConfiguration.h"
 #include "MapEditor/Edit/LineDraw.h"
-#include "MapEditor/GameConfiguration/GameConfiguration.h"
 #include "MapEditor/MapEditContext.h"
 #include "OpenGL/Drawing.h"
 #include "OpenGL/OpenGL.h"
@@ -446,7 +446,7 @@ void Renderer::drawGrid() const
 	{
 		auto mouse_pos = context_.input().mousePos();
 		double x = context_.snapToGrid(view_.mapX(mouse_pos.x), false);
-		double y = context_.snapToGrid(view_.mapX(mouse_pos.y), false);
+		double y = context_.snapToGrid(view_.mapY(mouse_pos.y), false);
 		auto col = ColourConfiguration::getColour("map_64grid");
 
 		// Small
@@ -1584,11 +1584,11 @@ void Renderer::animateSelectionChange(const MapEditor::Item& item, bool selected
 		if (!t) return;
 
 		// Get thing type
-		auto tt = theGameConfiguration->thingType(t->getType());
+		auto& tt = Game::configuration().thingType(t->getType());
 
 		// Start animation
-		double radius = tt->getRadius();
-		if (tt->shrinkOnZoom()) radius = renderer_2d_.scaledRadius(radius);
+		double radius = tt.radius();
+		if (tt.shrinkOnZoom()) radius = renderer_2d_.scaledRadius(radius);
 		animations_.push_back(
 			std::make_unique<MCAThingSelection>(
 				App::runTimer(),

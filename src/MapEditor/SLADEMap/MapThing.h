@@ -37,7 +37,8 @@ struct doom64thing_t
 	short	tid;
 };
 
-class ThingType;
+namespace Game { class ThingType; }
+
 class MapThing : public MapObject
 {
 	friend class SLADEMap;
@@ -83,7 +84,7 @@ public:
 	}
 
 	// For scripting
-	ThingType*	s_TypeInfo();
+	Game::ThingType	s_TypeInfo() const;
 };
 
 #endif //__MAPTHING_H__
